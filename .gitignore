@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+*.egg-info/
+dist/
+node_modules/
+.next/
+.env.local
+backend/investigations/
