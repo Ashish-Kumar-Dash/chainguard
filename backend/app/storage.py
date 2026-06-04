@@ -29,6 +29,7 @@ def list_investigations() -> list[dict]:
             "alert_raw": data.get("alert_raw", "")[:100],
             "status": data.get("status", "unknown"),
             "attack_type": data.get("attack_type", "unknown"),
+            "severity_score": data.get("severity_score", 0),
             "saved_at": data.get("_saved_at", ""),
         })
     return results
