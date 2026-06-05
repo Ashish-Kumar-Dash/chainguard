@@ -7,11 +7,15 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from data.scenarios.trojanized_extension import TrojanizedExtensionScenario
+from data.scenarios.poisoned_package import PoisonedPackageScenario
+from data.scenarios.compromised_ci import CompromisedCIScenario
 from data.ingest import ingest_scenario
 
 
 SCENARIOS = {
     "trojanized_extension": TrojanizedExtensionScenario,
+    "poisoned_package": PoisonedPackageScenario,
+    "compromised_ci": CompromisedCIScenario,
 }
 
 
