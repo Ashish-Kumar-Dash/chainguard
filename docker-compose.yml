@@ -1,0 +1,25 @@
+services:
+  splunk:
+    image: splunk/splunk:latest
+    container_name: chainguard-splunk
+    environment:
+      SPLUNK_START_ARGS: "--accept-license"
+      SPLUNK_PASSWORD: "ChainGuard123!"
+      SPLUNK_HEC_TOKEN: "chainguard-hec-token"
+      SPLUNK_APPS_URL: "https://splunkbase.splunk.com/app/7931/release/1.1.0/download"
+    ports:
+      - "8000:8000"   # Splunk Web
+      - "8088:8088"   # HEC
+      - "8089:8089"   # REST / MCP
+    volumes:
+      - ./splunk-license.xml:/tmp/splunk-license.xml
+      - splunk-data:/opt/splunk/var
+    healthcheck:
+      test: ["CMD", "curl", "-f", "-k", "https://localhost:8089/services/server/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 120s
+
+volumes:
+  splunk-data:
