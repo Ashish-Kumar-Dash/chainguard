@@ -2,6 +2,7 @@ import json
 from langchain_core.messages import SystemMessage, HumanMessage
 from app.llm import get_llm
 from app.agent.prompts import REMEDIATE_SYSTEM
+from app.agent.parse import extract_json
 from app.state import InvestigationState
 
 
@@ -20,7 +21,7 @@ async def remediate_node(state: InvestigationState) -> dict:
         HumanMessage(content=json.dumps(context, default=str)),
     ])
 
-    plan = json.loads(response.content)
+    plan = extract_json(response.content)
 
     actions = []
     for action in plan["actions"]:

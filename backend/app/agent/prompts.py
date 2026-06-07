@@ -36,6 +36,8 @@ For each step in the investigation plan, generate an SPL query. Respond with val
   ]
 }}
 
+IMPORTANT: Always include a time range in your queries (e.g. earliest=-7d or earliest=-24h). Without a time range, Splunk defaults to a very narrow window and may miss events.
+
 Write precise SPL. Use field extraction, stats, and table commands. Keep queries under 1 minute execution time."""
 
 

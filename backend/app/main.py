@@ -13,15 +13,15 @@ async def lifespan(app: FastAPI):
     if settings.splunk_mcp_token:
         try:
             from app.splunk.mcp_client import create_mcp_client
-            async with create_mcp_client() as client:
-                tools = client.get_tools()
-                for tool in tools:
-                    if tool.name == "splunk_get_indexes":
-                        result = await tool.ainvoke({})
-                        indexes = [idx.strip() for idx in str(result).split(",") if idx.strip()]
-                        if indexes:
-                            settings.splunk_indexes = indexes
-                            logger.info(f"Discovered Splunk indexes: {indexes}")
+            client = create_mcp_client()
+            tools = await client.get_tools()
+            for tool in tools:
+                if tool.name == "splunk_get_indexes":
+                    result = await tool.ainvoke({})
+                    indexes = [idx.strip() for idx in str(result).split(",") if idx.strip()]
+                    if indexes:
+                        settings.splunk_indexes = indexes
+                        logger.info(f"Discovered Splunk indexes: {indexes}")
         except Exception as e:
             logger.warning(f"Could not discover indexes at startup: {e}")
     yield

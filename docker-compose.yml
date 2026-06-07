@@ -4,6 +4,7 @@ services:
     container_name: chainguard-splunk
     environment:
       SPLUNK_START_ARGS: "--accept-license"
+      SPLUNK_GENERAL_TERMS: "--accept-sgt-current-at-splunk-com"
       SPLUNK_PASSWORD: "ChainGuard123!"
       SPLUNK_HEC_TOKEN: "chainguard-hec-token"
       SPLUNK_APPS_URL: "https://splunkbase.splunk.com/app/7931/release/1.1.0/download"

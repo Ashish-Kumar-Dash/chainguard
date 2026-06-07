@@ -2,6 +2,7 @@ import json
 from langchain_core.messages import SystemMessage, HumanMessage
 from app.llm import get_llm
 from app.agent.prompts import ASSESS_SYSTEM
+from app.agent.parse import extract_json
 from app.state import InvestigationState
 
 
@@ -23,7 +24,7 @@ async def assess_node(state: InvestigationState) -> dict:
         HumanMessage(content=json.dumps(context, default=str)),
     ])
 
-    assessment = json.loads(response.content)
+    assessment = extract_json(response.content)
 
     return {
         "severity_score": assessment["severity_score"],

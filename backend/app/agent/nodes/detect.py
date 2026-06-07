@@ -1,8 +1,8 @@
-import json
 from langchain_core.messages import SystemMessage, HumanMessage
 from app.llm import get_llm
 from app.config import settings
 from app.agent.prompts import DETECT_SYSTEM
+from app.agent.parse import extract_json
 from app.state import InvestigationState
 
 
@@ -23,7 +23,7 @@ async def detect_node(state: InvestigationState) -> dict:
         HumanMessage(content=prompt),
     ])
 
-    parsed = json.loads(response.content)
+    parsed = extract_json(response.content)
 
     return {
         "attack_type": parsed["attack_type"],
