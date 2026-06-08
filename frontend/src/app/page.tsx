@@ -1,114 +1,227 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { ChatPanel } from "@/components/ChatPanel";
-import { PhaseIndicator } from "@/components/PhaseIndicator";
-import { Timeline } from "@/components/Timeline";
-import { AttackGraph } from "@/components/AttackGraph";
-import { createInvestigation, streamInvestigation } from "@/lib/api";
-import type { InvestigationState, StateUpdate, InvestigationPhase } from "@/lib/types";
+import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { Plus, AlertTriangle, Shield, Eye, Clock, Activity, Search } from "lucide-react";
+import { listInvestigations, createInvestigation, getMCPMetrics, type MCPMetrics } from "@/lib/api";
+import type { InvestigationSummary } from "@/lib/types";
+import { MitreHeatmapMini } from "@/components/MitreHeatmapMini";
+import { MCPObservability } from "@/components/MCPObservability";
 
-const EMPTY_STATE: InvestigationState = {
-  alert_raw: "",
-  attack_type: "unknown",
-  iocs: [],
-  investigation_plan: [],
-  splunk_queries: [],
-  findings: [],
-  new_iocs: [],
-  loop_count: 0,
-  blast_radius: null,
-  severity_score: 0,
-  attack_timeline: [],
-  propagation_graph: null,
-  discovered_entities: [],
-  remediation_plan: [],
-  approved_actions: [],
-  rejected_actions: [],
-  reasoning: [],
-  status: "detecting",
+const SEVERITY_STYLE: Record<string, { color: string; bg: string }> = {
+  critical: { color: "var(--red)", bg: "var(--red-dim)" },
+  high: { color: "var(--orange)", bg: "var(--orange-dim)" },
+  medium: { color: "var(--yellow)", bg: "var(--yellow-dim)" },
+  low: { color: "var(--text-secondary)", bg: "var(--bg-elevated)" },
 };
 
-interface ReasoningMessage {
-  role: "agent";
-  content: string;
-  node: string;
-  timestamp: Date;
+function severityLevel(score: number): string {
+  if (score >= 8) return "critical";
+  if (score >= 6) return "high";
+  if (score >= 4) return "medium";
+  return "low";
 }
 
-export default function Home() {
-  const [investigationId, setInvestigationId] = useState<string | null>(null);
-  const [state, setState] = useState<InvestigationState>(EMPTY_STATE);
-  const [phase, setPhase] = useState<InvestigationPhase>("detecting");
-  const [nodeUpdates, setNodeUpdates] = useState<StateUpdate[]>([]);
-  const [reasoningMessages, setReasoningMessages] = useState<ReasoningMessage[]>([]);
-  const [isRunning, setIsRunning] = useState(false);
+export default function CommandCenter() {
+  const router = useRouter();
+  const [investigations, setInvestigations] = useState<InvestigationSummary[]>([]);
+  const [mcpMetrics, setMcpMetrics] = useState<MCPMetrics | null>(null);
+  const [newAlert, setNewAlert] = useState("");
+  const [creating, setCreating] = useState(false);
+  const [showNewForm, setShowNewForm] = useState(false);
 
-  const startStream = useCallback((id: string) => {
-    setIsRunning(true);
-    streamInvestigation(
-      id,
-      (update) => {
-        setNodeUpdates((prev) => [...prev, update]);
-        if (update.status) setPhase(update.status);
-        setState((prev) => ({ ...prev, ...update.update, status: update.status || prev.status }));
-
-        if (update.reasoning?.length) {
-          for (const text of update.reasoning) {
-            setReasoningMessages((prev) => [
-              ...prev,
-              { role: "agent", content: text, node: update.node, timestamp: new Date() },
-            ]);
-          }
-        }
-      },
-      (finalState) => {
-        setState(finalState as InvestigationState);
-        setIsRunning(false);
-      },
-    );
+  const refresh = useCallback(() => {
+    listInvestigations().then(setInvestigations).catch(() => {});
+    getMCPMetrics().then(setMcpMetrics).catch(() => {});
   }, []);
 
-  const handleSubmit = useCallback(async (alert: string) => {
-    setState({ ...EMPTY_STATE, alert_raw: alert });
-    setNodeUpdates([]);
-    setReasoningMessages([]);
+  useEffect(() => {
+    refresh();
+    const interval = setInterval(refresh, 10000);
+    return () => clearInterval(interval);
+  }, [refresh]);
 
-    const { investigation_id } = await createInvestigation(alert);
-    setInvestigationId(investigation_id);
-    startStream(investigation_id);
-  }, [startStream]);
+  async function handleCreate(e: React.FormEvent) {
+    e.preventDefault();
+    if (!newAlert.trim() || creating) return;
+    setCreating(true);
+    try {
+      const { investigation_id } = await createInvestigation(newAlert.trim());
+      router.push(`/investigate/${investigation_id}`);
+    } catch {
+      setCreating(false);
+    }
+  }
+
+  const active = investigations.filter((i) => i.active || i.status === "investigating" || i.status === "detecting");
+  const critical = investigations.filter((i) => (i.severity_score || 0) >= 8);
+  const pendingActions = investigations.filter((i) => i.status === "awaiting_approval");
+  const totalIOCs = investigations.reduce((sum, i) => sum + (i.severity_score || 0 > 0 ? 1 : 0), 0);
 
   return (
-    <div className="flex flex-col h-screen bg-gray-950 text-gray-100">
-      <PhaseIndicator phase={phase} isRunning={isRunning} />
-      <div className="flex flex-1 overflow-hidden">
-        {/* Left: Chat Panel */}
-        <div className="w-1/3 border-r border-gray-800">
-          <ChatPanel
-            onSubmit={handleSubmit}
-            state={state}
-            isRunning={isRunning}
-            investigationId={investigationId}
-            reasoningMessages={reasoningMessages}
-          />
+    <div className="p-6 space-y-5 max-w-[1400px]">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>Command Center</h1>
+          <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
+            Supply chain threat overview and investigation management
+          </p>
+        </div>
+        <button
+          onClick={() => setShowNewForm(!showNewForm)}
+          className="flex items-center gap-2 px-4 py-2 rounded-md text-xs font-semibold transition-colors cursor-pointer"
+          style={{ background: "var(--green)", color: "#fff" }}
+        >
+          <Plus size={14} /> New Investigation
+        </button>
+      </div>
+
+      {/* New Investigation Form */}
+      {showNewForm && (
+        <form onSubmit={handleCreate} className="panel p-4">
+          <div className="text-[11px] font-semibold uppercase tracking-wider mb-2" style={{ color: "var(--text-muted)" }}>
+            Launch Investigation
+          </div>
+          <div className="flex gap-3">
+            <textarea
+              value={newAlert}
+              onChange={(e) => setNewAlert(e.target.value)}
+              placeholder="Paste a security alert, threat intelligence report, or describe a suspicious supply chain activity..."
+              rows={3}
+              className="flex-1 rounded-md px-3 py-2 text-sm resize-none focus:outline-none focus:ring-1"
+              style={{
+                background: "var(--bg-primary)",
+                border: "1px solid var(--border-primary)",
+                color: "var(--text-primary)",
+              }}
+            />
+            <button
+              type="submit"
+              disabled={creating || !newAlert.trim()}
+              className="self-end px-5 py-2 rounded-md text-xs font-semibold transition-colors disabled:opacity-40 cursor-pointer"
+              style={{ background: "var(--green)", color: "#fff" }}
+            >
+              {creating ? "Launching..." : "Investigate"}
+            </button>
+          </div>
+        </form>
+      )}
+
+      {/* KPI Strip */}
+      <div className="grid grid-cols-4 gap-4">
+        <KPICard icon={<Eye size={16} />} label="Active Investigations" value={active.length} accent="var(--green)" />
+        <KPICard icon={<AlertTriangle size={16} />} label="Critical Threats" value={critical.length} accent="var(--red)" />
+        <KPICard icon={<Shield size={16} />} label="Investigations Total" value={investigations.length} accent="var(--blue)" />
+        <KPICard icon={<Clock size={16} />} label="Pending Actions" value={pendingActions.length} accent="var(--orange)" />
+      </div>
+
+      {/* Two-Column Grid */}
+      <div className="grid grid-cols-5 gap-4">
+        {/* Left: Investigations Table */}
+        <div className="col-span-3 panel">
+          <div className="panel-header flex items-center justify-between">
+            <span>Recent Investigations</span>
+            <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>
+              {investigations.length} total
+            </span>
+          </div>
+          <div className="overflow-x-auto">
+            {investigations.length === 0 ? (
+              <div className="p-8 text-center">
+                <Search size={24} style={{ color: "var(--text-muted)", margin: "0 auto 8px" }} />
+                <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+                  No investigations yet. Launch one to get started.
+                </p>
+              </div>
+            ) : (
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Attack Type</th>
+                    <th>Severity</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {investigations.map((inv) => {
+                    const sev = severityLevel(inv.severity_score || 0);
+                    const sevStyle = SEVERITY_STYLE[sev];
+                    return (
+                      <tr key={inv.id} className="cursor-pointer" onClick={() => router.push(`/investigate/${inv.id}`)}>
+                        <td className="font-mono text-[11px]">{inv.id}</td>
+                        <td>
+                          <span className="text-[11px] font-medium" style={{ color: "var(--text-primary)" }}>
+                            {(inv.attack_type || "unknown").replace(/_/g, " ")}
+                          </span>
+                        </td>
+                        <td>
+                          <span className="badge" style={{ color: sevStyle.color, background: sevStyle.bg }}>
+                            {inv.severity_score?.toFixed(1) || "—"}
+                          </span>
+                        </td>
+                        <td>
+                          <StatusBadge status={inv.status} />
+                        </td>
+                        <td>
+                          <button
+                            className="text-[11px] font-medium px-2 py-1 rounded transition-colors"
+                            style={{ color: "var(--blue)", background: "var(--blue-dim)" }}
+                            onClick={(e) => { e.stopPropagation(); router.push(`/investigate/${inv.id}`); }}
+                          >
+                            Open
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+          </div>
         </div>
 
-        {/* Center: Timeline */}
-        <div className="w-1/3 border-r border-gray-800">
-          <Timeline updates={nodeUpdates} state={state} />
-        </div>
-
-        {/* Right: Attack Graph + Remediation */}
-        <div className="w-1/3">
-          <AttackGraph
-            graph={state.propagation_graph}
-            discoveredEntities={state.discovered_entities || []}
-            remediationPlan={state.remediation_plan}
-            investigationId={investigationId}
-          />
+        {/* Right: MCP Observability */}
+        <div className="col-span-2">
+          <MCPObservability metrics={mcpMetrics} />
         </div>
       </div>
+
+      {/* Bottom: MITRE Heatmap */}
+      <MitreHeatmapMini investigations={investigations} />
     </div>
+  );
+}
+
+function KPICard({ icon, label, value, accent }: {
+  icon: React.ReactNode; label: string; value: number; accent: string;
+}) {
+  return (
+    <div className="kpi-card" style={{ borderLeft: `3px solid ${accent}` }}>
+      <div className="flex items-center gap-2 mb-2">
+        <span style={{ color: accent }}>{icon}</span>
+        <span className="kpi-label">{label}</span>
+      </div>
+      <div className="kpi-value" style={{ color: accent }}>{value}</div>
+    </div>
+  );
+}
+
+function StatusBadge({ status }: { status: string }) {
+  const styles: Record<string, { color: string; bg: string }> = {
+    detecting: { color: "var(--blue)", bg: "var(--blue-dim)" },
+    investigating: { color: "var(--orange)", bg: "var(--orange-dim)" },
+    assessing: { color: "var(--purple)", bg: "var(--purple-dim)" },
+    remediating: { color: "var(--yellow)", bg: "var(--yellow-dim)" },
+    awaiting_approval: { color: "var(--orange)", bg: "var(--orange-dim)" },
+    complete: { color: "var(--green)", bg: "var(--green-dim)" },
+  };
+  const s = styles[status] || styles.detecting;
+  return (
+    <span className="badge" style={{ color: s.color, background: s.bg }}>
+      {status === "awaiting_approval" ? "pending" : status}
+    </span>
   );
 }

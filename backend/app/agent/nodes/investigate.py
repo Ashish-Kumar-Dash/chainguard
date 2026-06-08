@@ -1,4 +1,5 @@
 import json
+import time
 import logging
 from datetime import datetime, timezone
 from langchain_core.messages import SystemMessage, HumanMessage
@@ -7,6 +8,7 @@ from app.config import settings
 from app.agent.prompts import INVESTIGATE_SYSTEM, INVESTIGATE_ANALYZE
 from app.agent.parse import extract_json
 from app.state import InvestigationState
+from app.mcp_metrics import mcp_metrics
 
 logger = logging.getLogger("chainguard")
 
@@ -26,11 +28,21 @@ async def _get_mcp_tools() -> dict:
         return {}
 
 
-async def run_splunk_query(spl: str, mcp_tools: dict | None = None) -> str:
+async def run_splunk_query(spl: str, mcp_tools: dict | None = None,
+                           investigation_id: str | None = None) -> str:
     if mcp_tools and "splunk_run_query" in mcp_tools:
         tool = mcp_tools["splunk_run_query"]
-        result = await tool.ainvoke({"query": spl})
-        return str(result)
+        t0 = time.time()
+        try:
+            result = await tool.ainvoke({"query": spl})
+            mcp_metrics.record("splunk_run_query", (time.time() - t0) * 1000,
+                               True, investigation_id=investigation_id)
+            return str(result)
+        except Exception as e:
+            mcp_metrics.record("splunk_run_query", (time.time() - t0) * 1000,
+                               False, error=str(e), investigation_id=investigation_id)
+            logger.error(f"MCP query failed: {e}")
+            return "[]"
     return "[]"
 
 

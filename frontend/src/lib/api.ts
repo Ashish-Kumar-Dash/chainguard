@@ -1,6 +1,6 @@
 import type { InvestigationState, InvestigationSummary, StateUpdate } from "./types";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8001";
 
 export async function createInvestigation(alert: string): Promise<{ investigation_id: string }> {
   const res = await fetch(`${API_BASE}/investigate`, {
@@ -79,4 +79,56 @@ export function streamInvestigation(
   };
 
   return eventSource;
+}
+
+export interface HealthStatus {
+  status: string;
+  llm_provider: string;
+  llm_model: string;
+  splunk_connected: boolean;
+  mcp_tools_available: number;
+  splunk_indexes: string[];
+}
+
+export async function getHealth(): Promise<HealthStatus> {
+  const res = await fetch(`${API_BASE}/health`);
+  if (!res.ok) throw new Error("Health check failed");
+  return res.json();
+}
+
+export interface MCPMetrics {
+  total_calls: number;
+  success_rate: number;
+  tools: Record<string, {
+    total: number;
+    success: number;
+    failure: number;
+    avg_latency_ms: number;
+    p95_latency_ms: number;
+    last_used: number;
+  }>;
+  recent: Array<{
+    tool: string;
+    latency_ms: number;
+    success: boolean;
+    error: string | null;
+    timestamp: number;
+    investigation_id: string | null;
+  }>;
+}
+
+export async function getMCPMetrics(): Promise<MCPMetrics> {
+  const res = await fetch(`${API_BASE}/metrics/mcp`);
+  if (!res.ok) throw new Error("Failed to get MCP metrics");
+  return res.json();
+}
+
+export async function runSplunkQuery(spl: string): Promise<{ results: Record<string, unknown>[]; latency_ms: number }> {
+  const res = await fetch(`${API_BASE}/splunk/query`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ spl }),
+  });
+  if (!res.ok) throw new Error(`SPL query failed: ${res.statusText}`);
+  return res.json();
 }

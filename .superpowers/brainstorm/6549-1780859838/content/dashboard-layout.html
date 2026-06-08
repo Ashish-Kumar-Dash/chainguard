@@ -1,0 +1,106 @@
+<h2>Dashboard Layout</h2>
+<p class="subtitle">This is the first page judges see. What layout makes the strongest impact?</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Metrics Bar + Grid (Recommended)</h3>
+      <p>Top: 4 KPI cards (Active Investigations, IOCs Tracked, Threats Detected, Actions Pending). Below: 2-column grid — left is recent investigations table, right is a live threat severity chart + MITRE technique heatmap.</p>
+      <div class="mockup" style="margin-top: 12px;">
+        <div class="mockup-header">Dashboard — Metrics Bar + Grid</div>
+        <div class="mockup-body" style="font-size: 11px; font-family: monospace; line-height: 1.6; color: #c9d1d9; background: #171d21;">
+          <div style="display:flex; gap:8px; margin-bottom:12px;">
+            <div style="flex:1; background:#1a2332; border:1px solid #2c353d; border-left:3px solid #65a637; padding:8px; border-radius:4px;">
+              <div style="color:#8b949e; font-size:9px;">ACTIVE</div>
+              <div style="font-size:18px; color:#65a637;">3</div>
+            </div>
+            <div style="flex:1; background:#1a2332; border:1px solid #2c353d; border-left:3px solid #f58220; padding:8px; border-radius:4px;">
+              <div style="color:#8b949e; font-size:9px;">IOCs TRACKED</div>
+              <div style="font-size:18px; color:#f58220;">47</div>
+            </div>
+            <div style="flex:1; background:#1a2332; border:1px solid #2c353d; border-left:3px solid #dc4e41; padding:8px; border-radius:4px;">
+              <div style="color:#8b949e; font-size:9px;">CRITICAL</div>
+              <div style="font-size:18px; color:#dc4e41;">2</div>
+            </div>
+            <div style="flex:1; background:#1a2332; border:1px solid #2c353d; border-left:3px solid #6ab7ff; padding:8px; border-radius:4px;">
+              <div style="color:#8b949e; font-size:9px;">PENDING ACTIONS</div>
+              <div style="font-size:18px; color:#6ab7ff;">8</div>
+            </div>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <div style="flex:3; background:#1a2332; border:1px solid #2c353d; padding:8px; border-radius:4px;">
+              <div style="color:#8b949e; font-size:9px; margin-bottom:6px;">RECENT INVESTIGATIONS</div>
+              <div style="border-bottom:1px solid #2c353d; padding:4px 0; display:flex; justify-content:space-between;">
+                <span style="color:#dc4e41;">● trojanized_extension</span><span style="color:#8b949e;">8.0</span><span style="color:#f58220;">awaiting_approval</span>
+              </div>
+              <div style="border-bottom:1px solid #2c353d; padding:4px 0; display:flex; justify-content:space-between;">
+                <span style="color:#f58220;">● poisoned_package</span><span style="color:#8b949e;">7.2</span><span style="color:#65a637;">complete</span>
+              </div>
+              <div style="padding:4px 0; display:flex; justify-content:space-between;">
+                <span style="color:#dc4e41;">● compromised_ci</span><span style="color:#8b949e;">9.1</span><span style="color:#6ab7ff;">investigating</span>
+              </div>
+            </div>
+            <div style="flex:2; background:#1a2332; border:1px solid #2c353d; padding:8px; border-radius:4px;">
+              <div style="color:#8b949e; font-size:9px; margin-bottom:6px;">MITRE COVERAGE</div>
+              <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:2px;">
+                <div style="background:#dc4e41; height:14px; border-radius:2px; opacity:0.9;"></div>
+                <div style="background:#2c353d; height:14px; border-radius:2px;"></div>
+                <div style="background:#f58220; height:14px; border-radius:2px; opacity:0.7;"></div>
+                <div style="background:#2c353d; height:14px; border-radius:2px;"></div>
+                <div style="background:#dc4e41; height:14px; border-radius:2px; opacity:0.6;"></div>
+                <div style="background:#2c353d; height:14px; border-radius:2px;"></div>
+                <div style="background:#2c353d; height:14px; border-radius:2px;"></div>
+                <div style="background:#65a637; height:14px; border-radius:2px; opacity:0.5;"></div>
+                <div style="background:#2c353d; height:14px; border-radius:2px;"></div>
+                <div style="background:#f58220; height:14px; border-radius:2px; opacity:0.8;"></div>
+                <div style="background:#2c353d; height:14px; border-radius:2px;"></div>
+                <div style="background:#dc4e41; height:14px; border-radius:2px; opacity:0.7;"></div>
+              </div>
+              <div style="color:#8b949e; font-size:8px; margin-top:6px;">T1195 T1059 T1078 T1552 T1071 T1203</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Hero Alert + Sidebar</h3>
+      <p>Big "New Investigation" hero with alert input front-and-center. Left sidebar has navigation + quick stats. Below the hero: recent investigation cards in a masonry grid with severity-colored borders.</p>
+      <div class="mockup" style="margin-top: 12px;">
+        <div class="mockup-header">Dashboard — Hero + Sidebar</div>
+        <div class="mockup-body" style="font-size: 11px; font-family: monospace; line-height: 1.6; color: #c9d1d9; background: #171d21;">
+          <div style="display:flex; gap:8px;">
+            <div style="width:50px; background:#1a2332; border:1px solid #2c353d; padding:6px; border-radius:4px; text-align:center;">
+              <div style="font-size:14px; margin-bottom:8px;">🛡️</div>
+              <div style="font-size:8px; color:#65a637;">3</div>
+              <div style="font-size:7px; color:#8b949e;">Active</div>
+              <div style="border-top:1px solid #2c353d; margin:6px 0;"></div>
+              <div style="font-size:8px; color:#dc4e41;">2</div>
+              <div style="font-size:7px; color:#8b949e;">Critical</div>
+            </div>
+            <div style="flex:1;">
+              <div style="background:#1a2332; border:1px solid #2c353d; border-left:3px solid #65a637; padding:12px; border-radius:4px; margin-bottom:8px; text-align:center;">
+                <div style="color:#c9d1d9; font-size:13px; margin-bottom:6px;">Start New Investigation</div>
+                <div style="background:#171d21; border:1px solid #2c353d; padding:6px; border-radius:4px; color:#8b949e; font-size:10px;">Paste alert, describe threat, or drop IOCs...</div>
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+                <div style="background:#1a2332; border:1px solid #2c353d; border-top:2px solid #dc4e41; padding:6px; border-radius:4px;">
+                  <div style="font-size:9px; color:#dc4e41;">trojanized_ext...</div>
+                  <div style="font-size:8px; color:#8b949e;">Score: 8.0</div>
+                </div>
+                <div style="background:#1a2332; border:1px solid #2c353d; border-top:2px solid #f58220; padding:6px; border-radius:4px;">
+                  <div style="font-size:9px; color:#f58220;">poisoned_pkg</div>
+                  <div style="font-size:8px; color:#8b949e;">Score: 7.2</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,49 @@
+<h2>ChainGuard Platform Structure</h2>
+<p class="subtitle">Which page structure makes this feel like a real security platform, not a chatbot?</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>SOC Command Center (Recommended)</h3>
+      <p><strong>5 pages:</strong> Dashboard → Investigations (list) → Investigation Workspace (live) → Threat Intel → Settings</p>
+      <p style="margin-top:8px; color: #94a3b8; font-size: 13px;">
+        Dashboard has metrics/alerts feed. Investigations page shows all past+active. Workspace is the full investigation experience (graph, timeline, evidence, remediation). Threat Intel shows IOC database + MITRE coverage. Settings for LLM/Splunk config.
+      </p>
+      <div class="pros-cons" style="margin-top: 12px;">
+        <div class="pros"><h4>Pros</h4><ul><li>Judges see depth immediately</li><li>Each page has clear purpose</li><li>Feels like enterprise software</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>More pages to build (but mostly layout/display)</li><li>~3 sessions of work</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Mission Control + Workspace</h3>
+      <p><strong>3 pages:</strong> Command Center (dashboard + alerts) → Investigation Workspace (tabbed) → Admin</p>
+      <p style="margin-top:8px; color: #94a3b8; font-size: 13px;">
+        Fewer pages but each is richer. Command Center combines dashboard metrics with alert feed and investigation list. Workspace has tabs for Graph/Evidence/Timeline/MITRE. Admin has config + threat intel management.
+      </p>
+      <div class="pros-cons" style="margin-top: 12px;">
+        <div class="pros"><h4>Pros</h4><ul><li>Faster to build (~2 sessions)</li><li>Less navigation overhead</li><li>Dense, power-user feel</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Fewer pages may seem less "thorough"</li><li>Tabs within tabs gets complex</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Full Enterprise Suite</h3>
+      <p><strong>7+ pages:</strong> Dashboard → Alerts → Investigations → Workspace → Threat Intel → MITRE Matrix → Reports → Settings</p>
+      <p style="margin-top:8px; color: #94a3b8; font-size: 13px;">
+        Maximum page count. Every feature gets its own page. MITRE ATT&CK matrix is its own interactive view. Reports page generates investigation summaries. Separate alerts management.
+      </p>
+      <div class="pros-cons" style="margin-top: 12px;">
+        <div class="pros"><h4>Pros</h4><ul><li>Maximum "thoroughness" impression</li><li>Each page is focused and clean</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Risk of shallow pages that feel like filler</li><li>4+ sessions of work, tight for deadline</li><li>Some pages may feel empty without real data</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>

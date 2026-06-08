@@ -4,6 +4,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.routes.investigate import router as investigate_router
+from app.routes.metrics import router as metrics_router
+from app.routes.splunk import router as splunk_router
 
 logger = logging.getLogger("chainguard")
 
@@ -38,12 +40,29 @@ app.add_middleware(
 )
 
 app.include_router(investigate_router)
+app.include_router(metrics_router)
+app.include_router(splunk_router)
 
 
 @app.get("/health")
 async def health():
+    splunk_ok = False
+    mcp_tools_count = 0
+    if settings.splunk_mcp_token:
+        try:
+            from app.splunk.mcp_client import create_mcp_client
+            client = create_mcp_client()
+            tools = await client.get_tools()
+            mcp_tools_count = len(tools)
+            splunk_ok = mcp_tools_count > 0
+        except Exception:
+            pass
+
     return {
         "status": "ok",
         "llm_provider": settings.llm_provider,
         "llm_model": settings.llm_model,
+        "splunk_connected": splunk_ok,
+        "mcp_tools_available": mcp_tools_count,
+        "splunk_indexes": settings.splunk_indexes,
     }
