@@ -36,34 +36,34 @@ class MCPMetricsStore:
             return {"total_calls": 0, "tools": {}, "recent": []}
 
         tool_stats = {}
-        for name, calls in self._by_tool.items():
-            successes = [c for c in calls if c.success]
-            failures = [c for c in calls if not c.success]
-            latencies = [c.latency_ms for c in calls]
-            tool_stats[name] = {
-                "total": len(calls),
+        for tool_name, tool_calls in self._by_tool.items():
+            successes = [tc for tc in tool_calls if tc.success]
+            failures = [tc for tc in tool_calls if not tc.success]
+            latencies = [tc.latency_ms for tc in tool_calls]
+            tool_stats[tool_name] = {
+                "total": len(tool_calls),
                 "success": len(successes),
                 "failure": len(failures),
                 "avg_latency_ms": round(sum(latencies) / len(latencies), 1),
                 "p95_latency_ms": round(sorted(latencies)[int(len(latencies) * 0.95)], 1) if latencies else 0,
-                "last_used": max(c.timestamp for c in calls),
+                "last_used": max(tc.timestamp for tc in tool_calls),
             }
 
-        recent = sorted(self.calls, key=lambda c: c.timestamp, reverse=True)[:20]
+        recent_calls = sorted(self.calls, key=lambda tc: tc.timestamp, reverse=True)[:20]
         return {
             "total_calls": len(self.calls),
-            "success_rate": round(sum(1 for c in self.calls if c.success) / len(self.calls) * 100, 1),
+            "success_rate": round(sum(1 for tc in self.calls if tc.success) / len(self.calls) * 100, 1),
             "tools": tool_stats,
             "recent": [
                 {
-                    "tool": c.tool_name,
-                    "latency_ms": c.latency_ms,
-                    "success": c.success,
-                    "error": c.error,
-                    "timestamp": c.timestamp,
-                    "investigation_id": c.investigation_id,
+                    "tool": tc.tool_name,
+                    "latency_ms": tc.latency_ms,
+                    "success": tc.success,
+                    "error": tc.error,
+                    "timestamp": tc.timestamp,
+                    "investigation_id": tc.investigation_id,
                 }
-                for c in recent
+                for tc in recent_calls
             ],
         }
 

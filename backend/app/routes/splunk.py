@@ -23,22 +23,22 @@ async def run_query(req: QueryRequest):
     from app.splunk.mcp_client import create_mcp_client
     client = create_mcp_client()
     tools = await client.get_tools()
-    tool_map = {t.name: t for t in tools}
+    tool_map = {tool.name: tool for tool in tools}
 
     if "splunk_run_query" not in tool_map:
         raise HTTPException(status_code=503, detail="splunk_run_query tool not available")
 
-    t0 = time.time()
+    start_time = time.time()
     try:
         result = await tool_map["splunk_run_query"].ainvoke({"query": req.spl})
-        latency = (time.time() - t0) * 1000
-        mcp_metrics.record("splunk_run_query", latency, True)
+        latency_ms = (time.time() - start_time) * 1000
+        mcp_metrics.record("splunk_run_query", latency_ms, True)
         parsed = json.loads(str(result))
         if isinstance(parsed, dict) and "results" in parsed:
-            return {"results": parsed["results"], "latency_ms": round(latency, 1)}
-        return {"results": parsed if isinstance(parsed, list) else [parsed], "latency_ms": round(latency, 1)}
+            return {"results": parsed["results"], "latency_ms": round(latency_ms, 1)}
+        return {"results": parsed if isinstance(parsed, list) else [parsed], "latency_ms": round(latency_ms, 1)}
     except Exception as e:
-        latency = (time.time() - t0) * 1000
-        mcp_metrics.record("splunk_run_query", latency, False, error=str(e))
+        latency_ms = (time.time() - start_time) * 1000
+        mcp_metrics.record("splunk_run_query", latency_ms, False, error=str(e))
         logger.error(f"SPL query failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))

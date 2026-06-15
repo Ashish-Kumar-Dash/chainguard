@@ -1,3 +1,4 @@
+import json
 import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
@@ -10,6 +11,21 @@ from app.routes.splunk import router as splunk_router
 logger = logging.getLogger("chainguard")
 
 
+def _parse_mcp_indexes(raw) -> list[str]:
+    # MCP returns index data in various formats — try parsing the whole
+    # response first, then fall back to extracting embedded JSON fragments.
+    text = str(raw)
+    candidates = [text] + text.split("'text': '")
+    for candidate in candidates:
+        try:
+            data = json.loads(candidate.rstrip("'}]"))
+            if "results" in data:
+                return [entry["title"] for entry in data["results"] if "title" in entry]
+        except (json.JSONDecodeError, KeyError):
+            continue
+    return []
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     if settings.splunk_mcp_token:
@@ -20,7 +36,7 @@ async def lifespan(app: FastAPI):
             for tool in tools:
                 if tool.name == "splunk_get_indexes":
                     result = await tool.ainvoke({})
-                    indexes = [idx.strip() for idx in str(result).split(",") if idx.strip()]
+                    indexes = _parse_mcp_indexes(result)
                     if indexes:
                         settings.splunk_indexes = indexes
                         logger.info(f"Discovered Splunk indexes: {indexes}")

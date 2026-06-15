@@ -37,6 +37,7 @@ def list_investigations() -> list[dict]:
 
 def _make_serializable(obj):
     if isinstance(obj, dict):
+        # Exclude LangGraph's internal `messages` field — it contains non-serializable BaseMessage objects.
         return {k: _make_serializable(v) for k, v in obj.items() if not k.startswith("messages")}
     if isinstance(obj, list):
         return [_make_serializable(item) for item in obj]
