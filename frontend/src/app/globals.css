@@ -25,6 +25,8 @@
   --purple-dim: #a78bfa20;
   --yellow: #fbbf24;
   --yellow-dim: #fbbf2420;
+  --cyan: #22d3ee;
+  --cyan-dim: #22d3ee20;
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
@@ -69,6 +71,11 @@ body {
   background: var(--bg-surface);
   border: 1px solid var(--border-primary);
   border-radius: 6px;
+  transition: border-color 0.2s;
+}
+
+.panel:hover {
+  border-color: var(--border-active);
 }
 
 .panel-header {
@@ -94,6 +101,12 @@ body {
   border-radius: 6px;
   padding: 14px 16px;
   min-width: 0;
+  transition: border-color 0.2s, transform 0.15s;
+}
+
+.kpi-card:hover {
+  border-color: var(--border-active);
+  transform: translateY(-1px);
 }
 
 .kpi-card .kpi-label {
@@ -132,6 +145,50 @@ body {
   animation: phase-glow 2s ease-in-out infinite;
 }
 
+/* Severity glow effect */
+@keyframes severity-glow-critical {
+  0%, 100% { box-shadow: 0 0 4px var(--red); }
+  50% { box-shadow: 0 0 10px var(--red); }
+}
+
+.glow-critical {
+  animation: severity-glow-critical 2s ease-in-out infinite;
+}
+
+@keyframes severity-glow-high {
+  0%, 100% { box-shadow: 0 0 3px var(--orange); }
+  50% { box-shadow: 0 0 8px var(--orange); }
+}
+
+.glow-high {
+  animation: severity-glow-high 2.5s ease-in-out infinite;
+}
+
+/* Scan line effect for header panels */
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+.scanline-bg {
+  position: relative;
+  overflow: hidden;
+}
+
+.scanline-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(101, 166, 55, 0.03) 50%,
+    transparent 100%
+  );
+  animation: scanline 6s linear infinite;
+  pointer-events: none;
+}
+
 /* Table styling */
 .data-table {
   width: 100%;
@@ -153,6 +210,10 @@ body {
   padding: 10px 12px;
   border-bottom: 1px solid var(--border-primary);
   color: var(--text-primary);
+}
+
+.data-table tr {
+  transition: background 0.15s;
 }
 
 .data-table tr:hover td {
@@ -195,4 +256,109 @@ body {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, var(--green), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Threat gauge */
+.threat-gauge {
+  position: relative;
+  width: 120px;
+  height: 60px;
+  overflow: hidden;
+}
+
+.threat-gauge-track {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 6px solid var(--border-primary);
+  border-bottom-color: transparent;
+  border-left-color: transparent;
+  transform: rotate(225deg);
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.threat-gauge-fill {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 6px solid transparent;
+  border-top-color: var(--gauge-color, var(--green));
+  border-right-color: var(--gauge-color, var(--green));
+  border-bottom-color: transparent;
+  border-left-color: transparent;
+  transform: rotate(225deg);
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: clip-path 0.5s ease;
+}
+
+/* Sub-agent flow visualization */
+@keyframes flow-pulse {
+  0% { opacity: 0.2; transform: translateX(-4px); }
+  50% { opacity: 1; transform: translateX(4px); }
+  100% { opacity: 0.2; transform: translateX(-4px); }
+}
+
+.flow-dot {
+  animation: flow-pulse 1.5s ease-in-out infinite;
+}
+
+.flow-dot-delay-1 { animation-delay: 0.2s; }
+.flow-dot-delay-2 { animation-delay: 0.4s; }
+
+/* Fade in animation */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in-up 0.3s ease-out forwards;
+}
+
+/* Status indicator ring */
+@keyframes ring-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(101, 166, 55, 0.4); }
+  70% { box-shadow: 0 0 0 6px rgba(101, 166, 55, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(101, 166, 55, 0); }
+}
+
+.ring-pulse {
+  animation: ring-pulse 2s ease-out infinite;
+}
+
+/* Scenario launch button */
+.scenario-btn {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-primary);
+  border-radius: 6px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.scenario-btn:hover {
+  border-color: var(--green);
+  background: var(--bg-elevated);
+  transform: translateY(-1px);
+}
+
+/* Grid background pattern for graph area */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(44, 53, 61, 0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(44, 53, 61, 0.5) 1px, transparent 1px);
+  background-size: 20px 20px;
 }

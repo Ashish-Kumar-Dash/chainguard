@@ -5,8 +5,21 @@ import type { StateUpdate } from "@/lib/types";
 const NODE_COLORS: Record<string, string> = {
   detect: "var(--blue)",
   investigate: "var(--orange)",
+  investigate_supervisor: "var(--green)",
+  ioc_hunter: "var(--blue)",
+  threat_intel: "var(--purple)",
+  blast_radius: "var(--orange)",
+  investigate_merge: "var(--cyan)",
   assess: "var(--red)",
   remediate: "var(--green)",
+};
+
+const NODE_LABELS: Record<string, string> = {
+  investigate_supervisor: "SUPERVISOR",
+  ioc_hunter: "IOC HUNTER",
+  threat_intel: "THREAT INTEL",
+  blast_radius: "BLAST RADIUS",
+  investigate_merge: "MERGE",
 };
 
 export function DecisionLog({ updates, reasoning }: {
@@ -37,16 +50,21 @@ export function DecisionLog({ updates, reasoning }: {
 
   return (
     <div className="flex-1 p-4 overflow-y-auto">
-      <div className="text-[10px] font-semibold uppercase tracking-wider mb-2" style={{ color: "var(--text-muted)" }}>
-        Decision Log
+      <div className="flex items-center justify-between mb-2">
+        <div className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-muted)" }}>
+          Decision Log
+        </div>
+        <span className="text-[9px] font-mono" style={{ color: "var(--text-muted)" }}>
+          {allEntries.length} entries
+        </span>
       </div>
       <div className="space-y-2">
         {allEntries.map((entry, i) => (
-          <div key={i} className="text-[11px] leading-relaxed pl-3"
+          <div key={i} className="text-[11px] leading-relaxed pl-3 animate-fade-in"
                style={{ borderLeft: `2px solid ${NODE_COLORS[entry.node] || "var(--border-primary)"}` }}>
             <span className="text-[9px] font-mono font-bold uppercase block mb-0.5"
                   style={{ color: NODE_COLORS[entry.node] || "var(--text-muted)" }}>
-              {entry.node}
+              {NODE_LABELS[entry.node] || entry.node}
             </span>
             <span style={{ color: "var(--text-secondary)" }}>{entry.text}</span>
           </div>

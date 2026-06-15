@@ -46,23 +46,59 @@ export function SettingsDrawer({ open, onClose, health }: {
             </a>
           </Section>
 
-          {/* Agent Configuration */}
-          <Section title="Agent Behavior">
+          {/* Agent Architecture */}
+          <Section title="Multi-Agent Architecture">
+            <InfoRow label="Topology" value="Supervisor → Fan-Out → Merge" />
             <InfoRow label="Max Investigation Loops" value="3" />
-            <InfoRow label="Graph Nodes" value="DETECT → INVESTIGATE → ASSESS → REMEDIATE" />
             <InfoRow label="Checkpointer" value="MemorySaver (in-memory)" />
+            <div className="mt-2 pt-2" style={{ borderTop: "1px solid var(--border-primary)" }}>
+              <div className="text-[10px] font-semibold mb-2" style={{ color: "var(--text-muted)" }}>
+                Sub-Agents
+              </div>
+              <div className="space-y-1.5">
+                <AgentRow name="IOC Hunter" description="Searches for indicator matches across Splunk" color="var(--blue)" />
+                <AgentRow name="Threat Intel" description="Correlates with known threats & MITRE ATT&CK" color="var(--purple)" />
+                <AgentRow name="Blast Radius" description="Maps compromise across repos, pipelines, secrets" color="var(--orange)" />
+              </div>
+            </div>
+            <div className="mt-2 pt-2" style={{ borderTop: "1px solid var(--border-primary)" }}>
+              <div className="text-[10px] font-semibold mb-1" style={{ color: "var(--text-muted)" }}>
+                Pipeline
+              </div>
+              <div className="flex items-center gap-1 flex-wrap text-[10px] font-mono">
+                <span className="px-1.5 py-0.5 rounded" style={{ background: "var(--blue-dim)", color: "var(--blue)" }}>DETECT</span>
+                <span style={{ color: "var(--text-muted)" }}>&rarr;</span>
+                <span className="px-1.5 py-0.5 rounded" style={{ background: "var(--green-dim)", color: "var(--green)" }}>SUPERVISOR</span>
+                <span style={{ color: "var(--text-muted)" }}>&rarr;</span>
+                <span className="px-1.5 py-0.5 rounded" style={{ background: "var(--orange-dim)", color: "var(--orange)" }}>3x AGENTS</span>
+                <span style={{ color: "var(--text-muted)" }}>&rarr;</span>
+                <span className="px-1.5 py-0.5 rounded" style={{ background: "var(--cyan-dim)", color: "var(--cyan)" }}>MERGE</span>
+                <span style={{ color: "var(--text-muted)" }}>&rarr;</span>
+                <span className="px-1.5 py-0.5 rounded" style={{ background: "var(--red-dim)", color: "var(--red)" }}>ASSESS</span>
+                <span style={{ color: "var(--text-muted)" }}>&rarr;</span>
+                <span className="px-1.5 py-0.5 rounded" style={{ background: "var(--green-dim)", color: "var(--green)" }}>REMEDIATE</span>
+              </div>
+            </div>
+          </Section>
+
+          {/* Tech Stack */}
+          <Section title="Tech Stack">
+            <InfoRow label="Framework" value="LangGraph 1.2.2" />
+            <InfoRow label="LLM" value="Groq (via LangChain)" />
+            <InfoRow label="Data Platform" value="Splunk Enterprise" />
+            <InfoRow label="Integration" value="MCP (Streamable HTTP)" />
+            <InfoRow label="Frontend" value="Next.js 15 + React Flow" />
+            <InfoRow label="Backend" value="FastAPI + SSE streaming" />
           </Section>
 
           {/* About */}
           <Section title="About ChainGuard">
             <p className="text-[11px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
               Autonomous supply chain threat investigation agent powered by LangGraph and Splunk MCP.
-              Detects, investigates, assesses, and remediates supply chain attacks using AI-driven
-              analysis of your Splunk security data.
+              Uses a multi-agent architecture with parallel sub-agents for IOC hunting, threat intelligence
+              correlation, and blast radius mapping. Results are synthesized via LLM-powered merge
+              for comprehensive, deduplicated analysis.
             </p>
-            <div className="mt-3 text-[10px] font-mono" style={{ color: "var(--text-muted)" }}>
-              v0.1.0 — Splunk Agentic Ops Hackathon 2026
-            </div>
           </Section>
         </div>
       </div>
@@ -91,6 +127,18 @@ function InfoRow({ label, value, valueColor }: { label: string; value: string; v
       <span className="text-[11px] font-medium font-mono" style={{ color: valueColor || "var(--text-primary)" }}>
         {value}
       </span>
+    </div>
+  );
+}
+
+function AgentRow({ name, description, color }: { name: string; description: string; color: string }) {
+  return (
+    <div className="flex items-center gap-2">
+      <div className="w-2 h-2 rounded-full" style={{ background: color }} />
+      <div>
+        <span className="text-[11px] font-medium" style={{ color: "var(--text-primary)" }}>{name}</span>
+        <span className="text-[10px] ml-1.5" style={{ color: "var(--text-muted)" }}>{description}</span>
+      </div>
     </div>
   );
 }

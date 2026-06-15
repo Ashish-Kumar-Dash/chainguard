@@ -2,12 +2,12 @@
 
 import type { InvestigationPhase } from "@/lib/types";
 
-const NODES: { key: InvestigationPhase; label: string; icon: string }[] = [
-  { key: "detecting", label: "DETECT", icon: "D" },
-  { key: "investigating", label: "INVESTIGATE", icon: "I" },
-  { key: "assessing", label: "ASSESS", icon: "A" },
-  { key: "remediating", label: "REMEDIATE", icon: "R" },
-  { key: "awaiting_approval", label: "APPROVAL", icon: "!" },
+const NODES: { key: InvestigationPhase; label: string; icon: string; sublabel?: string }[] = [
+  { key: "detecting", label: "DETECT", icon: "D", sublabel: "Classify & extract IOCs" },
+  { key: "investigating", label: "INVESTIGATE", icon: "I", sublabel: "3 parallel sub-agents" },
+  { key: "assessing", label: "ASSESS", icon: "A", sublabel: "Impact & blast radius" },
+  { key: "remediating", label: "REMEDIATE", icon: "R", sublabel: "Prioritized actions" },
+  { key: "awaiting_approval", label: "APPROVAL", icon: "!", sublabel: "Human-in-the-loop" },
   { key: "complete", label: "COMPLETE", icon: "C" },
 ];
 
@@ -50,14 +50,23 @@ export function AgentStateMachine({ phase, isRunning, loopCount }: {
                 )}
               </div>
               {/* Label */}
-              <span className="text-[11px] font-mono font-medium" style={{
-                color: isActive ? "var(--green)" : isDone ? "var(--text-secondary)" : "var(--text-muted)",
-              }}>
-                {node.label}
-              </span>
-              {isActive && isRunning && (
-                <span className="pulse-dot text-[8px]" style={{ color: "var(--green)" }}>RUNNING</span>
-              )}
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[11px] font-mono font-medium" style={{
+                    color: isActive ? "var(--green)" : isDone ? "var(--text-secondary)" : "var(--text-muted)",
+                  }}>
+                    {node.label}
+                  </span>
+                  {isActive && isRunning && (
+                    <span className="pulse-dot text-[8px]" style={{ color: "var(--green)" }}>RUNNING</span>
+                  )}
+                </div>
+                {node.sublabel && (isActive || isDone) && (
+                  <span className="text-[8px]" style={{ color: "var(--text-muted)" }}>
+                    {node.sublabel}
+                  </span>
+                )}
+              </div>
             </div>
           );
         })}

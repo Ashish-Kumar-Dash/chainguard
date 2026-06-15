@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Shield, LayoutDashboard, Search, Grid3X3, Settings, Activity, Zap, Database } from "lucide-react";
+import { Shield, LayoutDashboard, Search, Grid3X3, Settings, Activity, Zap, Database, GitBranch } from "lucide-react";
 import { getHealth, type HealthStatus } from "@/lib/api";
 import { SettingsDrawer } from "./SettingsDrawer";
 
@@ -33,13 +33,15 @@ export function Sidebar() {
         {/* Logo */}
         <div className="px-4 py-4 flex items-center gap-2.5" style={{ borderBottom: "1px solid var(--border-primary)" }}>
           <Shield size={20} style={{ color: "var(--green)" }} />
-          <span className="font-bold text-sm tracking-wide" style={{ color: "var(--text-primary)" }}>
-            ChainGuard
-          </span>
-          <span className="text-[9px] font-mono px-1.5 py-0.5 rounded"
-                style={{ background: "var(--green-dim)", color: "var(--green)" }}>
-            SOC
-          </span>
+          <div className="flex items-center gap-1.5">
+            <span className="font-bold text-sm tracking-wide gradient-text">
+              ChainGuard
+            </span>
+            <span className="text-[9px] font-mono px-1.5 py-0.5 rounded"
+                  style={{ background: "var(--green-dim)", color: "var(--green)" }}>
+              SOC
+            </span>
+          </div>
         </div>
 
         {/* Navigation */}
@@ -64,6 +66,38 @@ export function Sidebar() {
             );
           })}
         </nav>
+
+        {/* Agent Architecture Mini */}
+        <div className="px-3 py-3" style={{ borderTop: "1px solid var(--border-primary)" }}>
+          <div className="text-[10px] font-semibold uppercase tracking-wider px-1 mb-2"
+               style={{ color: "var(--text-muted)" }}>
+            Agent Architecture
+          </div>
+          <div className="rounded-md px-3 py-2" style={{ background: "var(--bg-primary)", border: "1px solid var(--border-primary)" }}>
+            <div className="flex items-center gap-1.5 text-[9px] font-mono">
+              <GitBranch size={10} style={{ color: "var(--green)" }} />
+              <span style={{ color: "var(--text-secondary)" }}>DETECT</span>
+              <span style={{ color: "var(--text-muted)" }}>&rarr;</span>
+              <span style={{ color: "var(--orange)" }}>INVESTIGATE</span>
+              <span style={{ color: "var(--text-muted)" }}>&rarr;</span>
+              <span style={{ color: "var(--text-secondary)" }}>ASSESS</span>
+            </div>
+            <div className="text-[8px] mt-1 pl-4 space-y-0.5">
+              <div className="flex items-center gap-1">
+                <div className="w-1 h-1 rounded-full" style={{ background: "var(--blue)" }} />
+                <span style={{ color: "var(--text-muted)" }}>IOC Hunter</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-1 h-1 rounded-full" style={{ background: "var(--purple)" }} />
+                <span style={{ color: "var(--text-muted)" }}>Threat Intel</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-1 h-1 rounded-full" style={{ background: "var(--orange)" }} />
+                <span style={{ color: "var(--text-muted)" }}>Blast Radius</span>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Connection Status */}
         <div className="px-3 py-3 space-y-2" style={{ borderTop: "1px solid var(--border-primary)" }}>
@@ -91,15 +125,20 @@ export function Sidebar() {
           />
         </div>
 
-        {/* Settings */}
-        <button
-          onClick={() => setSettingsOpen(true)}
-          className="flex items-center gap-2.5 px-6 py-3 text-[13px] font-medium transition-colors cursor-pointer"
-          style={{ borderTop: "1px solid var(--border-primary)", color: "var(--text-secondary)" }}
-        >
-          <Settings size={16} style={{ color: "var(--text-muted)" }} />
-          Settings
-        </button>
+        {/* Settings + Version */}
+        <div style={{ borderTop: "1px solid var(--border-primary)" }}>
+          <button
+            onClick={() => setSettingsOpen(true)}
+            className="flex items-center gap-2.5 px-6 py-3 text-[13px] font-medium transition-colors cursor-pointer w-full"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            <Settings size={16} style={{ color: "var(--text-muted)" }} />
+            Settings
+          </button>
+          <div className="px-6 pb-3 text-[9px] font-mono" style={{ color: "var(--text-muted)" }}>
+            v0.2.0 — Multi-Agent
+          </div>
+        </div>
       </div>
       <SettingsDrawer open={settingsOpen} onClose={() => setSettingsOpen(false)} health={health} />
     </>
@@ -119,7 +158,7 @@ function StatusRow({ icon, label, sublabel, connected }: {
         )}
       </div>
       <div
-        className={`w-1.5 h-1.5 rounded-full ${connected ? "pulse-dot" : ""}`}
+        className={`w-1.5 h-1.5 rounded-full ${connected ? "ring-pulse" : ""}`}
         style={{ background: connected ? "var(--green)" : "var(--red)" }}
       />
     </div>
