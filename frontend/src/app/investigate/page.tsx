@@ -2,17 +2,17 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Search, Filter } from "lucide-react";
+import { Plus, Search, Filter, AlertTriangle, Clock, Shield } from "lucide-react";
 import { listInvestigations, createInvestigation } from "@/lib/api";
 import type { InvestigationSummary } from "@/lib/types";
 
-const STATUS_STYLES: Record<string, { color: string; bg: string }> = {
-  detecting: { color: "var(--blue)", bg: "var(--blue-dim)" },
-  investigating: { color: "var(--orange)", bg: "var(--orange-dim)" },
-  assessing: { color: "var(--purple)", bg: "var(--purple-dim)" },
-  remediating: { color: "var(--yellow)", bg: "var(--yellow-dim)" },
-  awaiting_approval: { color: "var(--orange)", bg: "var(--orange-dim)" },
-  complete: { color: "var(--green)", bg: "var(--green-dim)" },
+const STATUS_STYLES: Record<string, { color: string; bg: string; label: string }> = {
+  detecting: { color: "var(--blue)", bg: "var(--blue-dim)", label: "Detecting" },
+  investigating: { color: "var(--orange)", bg: "var(--orange-dim)", label: "Investigating" },
+  assessing: { color: "var(--purple)", bg: "var(--purple-dim)", label: "Assessing" },
+  remediating: { color: "var(--yellow)", bg: "var(--yellow-dim)", label: "Remediating" },
+  awaiting_approval: { color: "var(--orange)", bg: "var(--orange-dim)", label: "Pending" },
+  complete: { color: "var(--green)", bg: "var(--green-dim)", label: "Complete" },
 };
 
 export default function InvestigationsPage() {
@@ -46,11 +46,16 @@ export default function InvestigationsPage() {
     }
   }
 
-  const filtered = investigations.filter((inv) => {
-    if (filter !== "all" && inv.status !== filter) return false;
-    if (search && !inv.id.includes(search) && !(inv.attack_type || "").includes(search)) return false;
+  const filtered = investigations.filter((investigation) => {
+    if (filter !== "all" && investigation.status !== filter) return false;
+    if (search && !investigation.id.includes(search) && !(investigation.attack_type || "").includes(search)) return false;
     return true;
   });
+
+  const statusCounts = investigations.reduce((counts, investigation) => {
+    counts[investigation.status] = (counts[investigation.status] || 0) + 1;
+    return counts;
+  }, {} as Record<string, number>);
 
   return (
     <div className="p-6 max-w-[1200px]">
@@ -64,7 +69,7 @@ export default function InvestigationsPage() {
         </div>
         <button
           onClick={() => setShowNewForm(!showNewForm)}
-          className="flex items-center gap-2 px-4 py-2 rounded-md text-xs font-semibold cursor-pointer"
+          className="flex items-center gap-2 px-4 py-2 rounded-md text-xs font-semibold cursor-pointer hover:brightness-110 transition-all"
           style={{ background: "var(--green)", color: "#fff" }}
         >
           <Plus size={14} /> New Investigation
@@ -73,7 +78,7 @@ export default function InvestigationsPage() {
 
       {/* New Investigation Form */}
       {showNewForm && (
-        <form onSubmit={handleCreate} className="panel p-4 mb-5">
+        <form onSubmit={handleCreate} className="panel p-4 mb-5 animate-fade-in">
           <div className="text-[11px] font-semibold uppercase tracking-wider mb-2" style={{ color: "var(--text-muted)" }}>
             Launch Investigation
           </div>
@@ -93,6 +98,22 @@ export default function InvestigationsPage() {
             </button>
           </div>
         </form>
+      )}
+
+      {/* Status Summary Strip */}
+      {investigations.length > 0 && (
+        <div className="flex items-center gap-3 mb-4">
+          {Object.entries(statusCounts).map(([status, count]) => {
+            const style = STATUS_STYLES[status] || STATUS_STYLES.detecting;
+            return (
+              <div key={status} className="flex items-center gap-1.5 px-2.5 py-1 rounded text-[10px] font-medium"
+                   style={{ background: style.bg, color: style.color }}>
+                <div className="w-1.5 h-1.5 rounded-full" style={{ background: style.color }} />
+                {count} {style.label}
+              </div>
+            );
+          })}
+        </div>
       )}
 
       {/* Filters */}
@@ -115,11 +136,12 @@ export default function InvestigationsPage() {
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className="px-2.5 py-1 rounded text-[10px] font-medium cursor-pointer transition-colors"
+              className="px-2.5 py-1 rounded text-[10px] font-medium cursor-pointer transition-all"
               style={{
                 background: filter === f ? "var(--green-dim)" : "var(--bg-surface)",
                 color: filter === f ? "var(--green)" : "var(--text-muted)",
                 border: `1px solid ${filter === f ? "var(--green)" : "var(--border-primary)"}`,
+                transform: filter === f ? "scale(1.05)" : "scale(1)",
               }}
             >
               {f}
@@ -131,45 +153,60 @@ export default function InvestigationsPage() {
       {/* Investigation Cards */}
       {filtered.length === 0 ? (
         <div className="panel p-12 text-center">
-          <Search size={28} style={{ color: "var(--text-muted)", margin: "0 auto 12px" }} />
-          <p className="text-sm" style={{ color: "var(--text-muted)" }}>
-            {investigations.length === 0 ? "No investigations yet. Launch one to get started." : "No investigations match your filter."}
+          <Shield size={28} style={{ color: "var(--text-muted)", margin: "0 auto 12px" }} />
+          <p className="text-sm font-medium mb-1" style={{ color: "var(--text-secondary)" }}>
+            {investigations.length === 0 ? "No investigations yet" : "No matches found"}
+          </p>
+          <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+            {investigations.length === 0 ? "Launch an investigation to get started." : "Try adjusting your search or filter."}
           </p>
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-3">
-          {filtered.map((inv) => {
-            const statusStyle = STATUS_STYLES[inv.status] || STATUS_STYLES.detecting;
-            const sevColor = (inv.severity_score || 0) >= 8 ? "var(--red)" :
-              (inv.severity_score || 0) >= 6 ? "var(--orange)" :
-              (inv.severity_score || 0) >= 4 ? "var(--yellow)" : "var(--text-muted)";
+          {filtered.map((investigation) => {
+            const statusStyle = STATUS_STYLES[investigation.status] || STATUS_STYLES.detecting;
+            const severityColor = (investigation.severity_score || 0) >= 8 ? "var(--red)" :
+              (investigation.severity_score || 0) >= 6 ? "var(--orange)" :
+              (investigation.severity_score || 0) >= 4 ? "var(--yellow)" : "var(--text-muted)";
             return (
               <button
-                key={inv.id}
-                onClick={() => router.push(`/investigate/${inv.id}`)}
-                className="panel p-4 text-left cursor-pointer hover:brightness-110 transition-all"
-                style={{ borderLeftWidth: "3px", borderLeftColor: sevColor }}
+                key={investigation.id}
+                onClick={() => router.push(`/investigate/${investigation.id}`)}
+                className="panel p-4 text-left cursor-pointer transition-all hover:brightness-110"
+                style={{ borderLeftWidth: "3px", borderLeftColor: severityColor }}
               >
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-mono font-bold" style={{ color: "var(--text-primary)" }}>
-                    {inv.id}
+                    {investigation.id}
                   </span>
-                  <span className="badge" style={{ color: statusStyle.color, background: statusStyle.bg }}>
-                    {inv.status === "awaiting_approval" ? "pending" : inv.status}
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    {investigation.active && (
+                      <span className="w-1.5 h-1.5 rounded-full ring-pulse" style={{ background: "var(--green)" }} />
+                    )}
+                    <span className="badge" style={{ color: statusStyle.color, background: statusStyle.bg }}>
+                      {statusStyle.label}
+                    </span>
+                  </div>
                 </div>
-                <div className="text-[12px] font-medium mb-1" style={{ color: "var(--text-primary)" }}>
-                  {(inv.attack_type || "unknown").replace(/_/g, " ")}
+                <div className="text-[12px] font-medium mb-1.5" style={{ color: "var(--text-primary)" }}>
+                  {(investigation.attack_type || "unknown").replace(/_/g, " ")}
                 </div>
                 <div className="flex items-center gap-3 text-[10px]" style={{ color: "var(--text-muted)" }}>
-                  {(inv.severity_score || 0) > 0 && (
-                    <span>Severity: <span style={{ color: sevColor, fontWeight: 600 }}>{inv.severity_score?.toFixed(1)}</span></span>
+                  {(investigation.severity_score || 0) > 0 && (
+                    <span className="flex items-center gap-1">
+                      <AlertTriangle size={9} style={{ color: severityColor }} />
+                      Severity: <span style={{ color: severityColor, fontWeight: 600 }}>{investigation.severity_score?.toFixed(1)}</span>
+                    </span>
                   )}
-                  {inv.active && <span className="pulse-dot" style={{ color: "var(--green)" }}>LIVE</span>}
+                  {investigation.active && (
+                    <span className="flex items-center gap-1 pulse-dot" style={{ color: "var(--green)" }}>
+                      <Clock size={9} /> LIVE
+                    </span>
+                  )}
                 </div>
-                {inv.alert_raw && (
-                  <p className="text-[10px] mt-2 truncate" style={{ color: "var(--text-muted)" }}>
-                    {inv.alert_raw}
+                {investigation.alert_raw && (
+                  <p className="text-[10px] mt-2 line-clamp-2 leading-relaxed" style={{ color: "var(--text-muted)" }}>
+                    {investigation.alert_raw}
                   </p>
                 )}
               </button>

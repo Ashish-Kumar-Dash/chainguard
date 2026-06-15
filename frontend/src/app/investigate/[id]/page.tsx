@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useCallback, useEffect, use } from "react";
+import { useState, useCallback, useEffect, useRef, use } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Download, Share2 } from "lucide-react";
-import { getInvestigation, createInvestigation, streamInvestigation } from "@/lib/api";
+import { ArrowLeft, Download, RotateCcw, Square } from "lucide-react";
+import { getInvestigation, createInvestigation, streamInvestigation, continueInvestigation, stopInvestigation } from "@/lib/api";
 import type { InvestigationState, StateUpdate, InvestigationPhase } from "@/lib/types";
 import { AgentStateMachine } from "@/components/AgentStateMachine";
+import { SubAgentActivity } from "@/components/SubAgentActivity";
 import { DecisionLog } from "@/components/DecisionLog";
 import { WorkspaceTabs } from "@/components/WorkspaceTabs";
 import { EntitySidebar } from "@/components/EntitySidebar";
@@ -40,11 +41,12 @@ export default function InvestigationWorkspace({ params }: { params: Promise<{ i
   const [updates, setUpdates] = useState<StateUpdate[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const eventSourceRef = useRef<EventSource | null>(null);
 
-  const startStream = useCallback((invId: string) => {
+  const startStream = useCallback((investigationId: string) => {
     setIsRunning(true);
-    streamInvestigation(
-      invId,
+    const source = streamInvestigation(
+      investigationId,
       (update) => {
         setUpdates((prev) => [...prev, update]);
         if (update.status) setPhase(update.status);
@@ -57,9 +59,22 @@ export default function InvestigationWorkspace({ params }: { params: Promise<{ i
       (finalState) => {
         setState(finalState as InvestigationState);
         setIsRunning(false);
+        eventSourceRef.current = null;
       },
     );
+    eventSourceRef.current = source;
   }, []);
+
+  function handleStop() {
+    stopInvestigation(id).catch(() => {});
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close();
+      eventSourceRef.current = null;
+    }
+    setIsRunning(false);
+    setPhase("complete");
+    setState((prev) => ({ ...prev, status: "complete" }));
+  }
 
   useEffect(() => {
     getInvestigation(id)
@@ -90,6 +105,10 @@ export default function InvestigationWorkspace({ params }: { params: Promise<{ i
   const severityColor = state.severity_score >= 8 ? "var(--red)" :
     state.severity_score >= 6 ? "var(--orange)" :
     state.severity_score >= 4 ? "var(--yellow)" : "var(--green)";
+
+  const findingsCount = state.findings.length;
+  const iocCount = state.iocs.length + state.new_iocs.length;
+  const entityCount = state.discovered_entities.length;
 
   return (
     <div className="flex flex-col h-screen">
@@ -122,24 +141,47 @@ export default function InvestigationWorkspace({ params }: { params: Promise<{ i
                 <span>Severity: <span style={{ color: severityColor, fontWeight: 600 }}>{state.severity_score.toFixed(1)}</span></span>
               )}
               <span>Loop: {state.loop_count}/3</span>
+              <span className="text-[10px]" style={{ color: "var(--border-active)" }}>|</span>
+              <span>{findingsCount} findings</span>
+              <span>{iocCount} IOCs</span>
+              <span>{entityCount} entities</span>
             </div>
           </div>
         </div>
         <div className="flex items-center gap-2">
+          {isRunning && (
+            <button
+              onClick={handleStop}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[11px] font-medium transition-colors cursor-pointer"
+              style={{ background: "var(--red-dim)", border: "1px solid var(--red)", color: "var(--red)" }}
+            >
+              <Square size={10} /> Stop
+            </button>
+          )}
+          {!isRunning && state.status === "complete" && (
+            <button
+              onClick={() => continueInvestigation(id, "Re-investigate with latest data").then(() => startStream(id))}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[11px] font-medium transition-colors cursor-pointer"
+              style={{ background: "var(--green-dim)", border: "1px solid var(--green)", color: "var(--green)" }}
+            >
+              <RotateCcw size={12} /> Re-Investigate
+            </button>
+          )}
           <button onClick={handleExport}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[11px] font-medium transition-colors cursor-pointer"
                   style={{ background: "var(--bg-surface)", border: "1px solid var(--border-primary)", color: "var(--text-secondary)" }}>
-            <Download size={12} /> Export
+            <Download size={12} /> Export JSON
           </button>
         </div>
       </div>
 
       {/* Main workspace grid */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Left: State Machine + Decision Log */}
-        <div className="w-[260px] shrink-0 flex flex-col overflow-y-auto"
+        {/* Left: State Machine + Sub-Agent Activity + Decision Log */}
+        <div className="w-[280px] shrink-0 flex flex-col overflow-y-auto"
              style={{ borderRight: "1px solid var(--border-primary)" }}>
           <AgentStateMachine phase={phase} isRunning={isRunning} loopCount={state.loop_count} />
+          <SubAgentActivity phase={phase} isRunning={isRunning} queryCount={state.splunk_queries.length} />
           <DecisionLog updates={updates} reasoning={state.reasoning} />
         </div>
 

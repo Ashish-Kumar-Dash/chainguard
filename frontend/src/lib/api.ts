@@ -40,6 +40,14 @@ export async function rejectAction(investigationId: string, actionId: string) {
   return res.json();
 }
 
+export async function stopInvestigation(investigationId: string) {
+  const res = await fetch(`${API_BASE}/investigate/${investigationId}/stop`, {
+    method: "POST",
+  });
+  if (!res.ok) throw new Error(`Failed to stop investigation: ${res.statusText}`);
+  return res.json();
+}
+
 export async function continueInvestigation(investigationId: string, message: string) {
   const res = await fetch(`${API_BASE}/investigate/${investigationId}/continue`, {
     method: "POST",
@@ -68,8 +76,13 @@ export function streamInvestigation(
   });
 
   eventSource.addEventListener("error", (event) => {
-    const data = JSON.parse((event as MessageEvent).data || "{}");
-    console.error("Investigation error:", data);
+    const messageEvent = event as MessageEvent;
+    if (messageEvent.data) {
+      try {
+        const data = JSON.parse(messageEvent.data);
+        if (data.error) console.warn("Investigation error:", data.error);
+      } catch { /* non-JSON error payload */ }
+    }
     eventSource.close();
     onError?.(event);
   });
