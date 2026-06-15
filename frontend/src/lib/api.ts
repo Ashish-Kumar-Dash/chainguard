@@ -1,6 +1,6 @@
 import type { InvestigationState, InvestigationSummary, StateUpdate } from "./types";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8001";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
 export async function createInvestigation(alert: string): Promise<{ investigation_id: string }> {
   const res = await fetch(`${API_BASE}/investigate`, {
