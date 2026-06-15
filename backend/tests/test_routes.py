@@ -1,17 +1,17 @@
 import pytest
 from httpx import AsyncClient, ASGITransport
 from app.main import app
-from app.routes.investigate import _active
+from app.routes.investigate import _running_investigations
 from app.storage import INVESTIGATIONS_DIR
 
 
 @pytest.fixture(autouse=True)
 def clean_state():
-    _active.clear()
+    _running_investigations.clear()
     for f in INVESTIGATIONS_DIR.glob("*.json"):
         f.unlink()
     yield
-    _active.clear()
+    _running_investigations.clear()
     for f in INVESTIGATIONS_DIR.glob("*.json"):
         f.unlink()
 
@@ -91,7 +91,7 @@ async def test_continue_investigation():
         )
     assert resp.status_code == 200
     assert resp.json()["status"] == "resumed"
-    assert "[Follow-up]" in _active[inv_id]["state"]["alert_raw"]
+    assert "[Follow-up]" in _running_investigations[inv_id]["state"]["alert_raw"]
 
 
 @pytest.mark.asyncio
@@ -110,7 +110,7 @@ async def test_approve_action():
         create_resp = await client.post("/investigate", json={"alert": "Test"})
         inv_id = create_resp.json()["investigation_id"]
 
-    _active[inv_id]["state"]["remediation_plan"] = [
+    _running_investigations[inv_id]["state"]["remediation_plan"] = [
         {"id": "action-001", "description": "Rotate creds", "priority": "critical",
          "category": "rotate_secret", "target": "github_pat", "status": "pending"},
     ]
@@ -119,8 +119,8 @@ async def test_approve_action():
         resp = await client.post(f"/investigate/{inv_id}/actions/action-001/approve")
     assert resp.status_code == 200
     assert resp.json()["status"] == "approved"
-    assert _active[inv_id]["state"]["remediation_plan"][0]["status"] == "approved"
-    assert len(_active[inv_id]["state"]["approved_actions"]) == 1
+    assert _running_investigations[inv_id]["state"]["remediation_plan"][0]["status"] == "approved"
+    assert len(_running_investigations[inv_id]["state"]["approved_actions"]) == 1
 
 
 @pytest.mark.asyncio
@@ -129,7 +129,7 @@ async def test_reject_action():
         create_resp = await client.post("/investigate", json={"alert": "Test"})
         inv_id = create_resp.json()["investigation_id"]
 
-    _active[inv_id]["state"]["remediation_plan"] = [
+    _running_investigations[inv_id]["state"]["remediation_plan"] = [
         {"id": "action-002", "description": "Block IP", "priority": "high",
          "category": "block_network", "target": "1.2.3.4", "status": "pending"},
     ]
@@ -138,8 +138,8 @@ async def test_reject_action():
         resp = await client.post(f"/investigate/{inv_id}/actions/action-002/reject")
     assert resp.status_code == 200
     assert resp.json()["status"] == "rejected"
-    assert _active[inv_id]["state"]["remediation_plan"][0]["status"] == "rejected"
-    assert len(_active[inv_id]["state"]["rejected_actions"]) == 1
+    assert _running_investigations[inv_id]["state"]["remediation_plan"][0]["status"] == "rejected"
+    assert len(_running_investigations[inv_id]["state"]["rejected_actions"]) == 1
 
 
 @pytest.mark.asyncio

@@ -2,38 +2,27 @@ import pytest
 import json
 from unittest.mock import AsyncMock, patch, MagicMock
 from langchain_core.messages import AIMessage
-from app.agent.nodes.investigate import investigate_node, extract_entities_from_results
+from app.agent.nodes.investigate import (
+    investigate_supervisor, investigate_merge, run_splunk_query, extract_entities_from_results,
+)
 
 
-MOCK_QUERY_PLAN = json.dumps({
-    "queries": [
-        {
-            "step": "Search for extension installs",
-            "spl": 'search index=extensions extension_id="codestyle-formatter"',
-            "target_index": "extensions",
-        },
-        {
-            "step": "Search threat intel for C2 domain",
-            "spl": 'search index=threat_intel ioc_value="c2.styleformat.io"',
-            "target_index": "threat_intel",
-        },
-    ]
-})
-
-MOCK_ANALYSIS = json.dumps({
+MOCK_MERGE_RESPONSE = json.dumps({
     "findings": [
         {
-            "description": "Extension codestyle-formatter installed on 4 hosts",
+            "description": "Extension codestyle-formatter found on 4 hosts with C2 callback",
             "severity": "high",
-            "iocs": [{"type": "domain", "value": "c2.styleformat.io", "source": "query_results"}],
+            "iocs": [
+                {"type": "domain", "value": "c2.styleformat.io", "source": "ioc_hunter"},
+                {"type": "ip", "value": "45.33.32.156", "source": "threat_intel"},
+            ],
             "mitre_technique": "T1195.002",
         }
     ],
     "new_iocs": [
         {"type": "ip", "value": "45.33.32.156", "source": "discovered_during_investigation"}
     ],
-    "needs_more_investigation": False,
-    "reasoning": "Found evidence of extension compromise with C2 callback",
+    "reasoning": "Combined analysis from IOC hunting, threat intel, and blast radius mapping confirms supply chain compromise.",
 })
 
 
@@ -54,6 +43,7 @@ def _make_state(**overrides) -> dict:
         "attack_timeline": [],
         "propagation_graph": None,
         "discovered_entities": [],
+        "sub_agent_results": [],
         "remediation_plan": [],
         "approved_actions": [],
         "rejected_actions": [],
@@ -63,57 +53,79 @@ def _make_state(**overrides) -> dict:
     return base
 
 
-@pytest.mark.asyncio
-async def test_investigate_runs_queries_and_analyzes():
+def test_supervisor_returns_three_send_messages():
     state = _make_state()
+    sends = investigate_supervisor(state)
+
+    assert len(sends) == 3
+    agent_names = {s.node for s in sends}
+    assert agent_names == {"ioc_hunter", "threat_intel", "blast_radius"}
+
+    for s in sends:
+        assert "iocs" in s.arg
+        assert "attack_type" in s.arg
+        assert "investigation_plan" in s.arg
+        assert "alert_raw" in s.arg
+
+
+@pytest.mark.asyncio
+async def test_merge_synthesizes_sub_agent_results():
+    state = _make_state(
+        sub_agent_results=[
+            {
+                "agent_name": "ioc_hunter",
+                "splunk_queries": [{"spl": "search index=extensions", "results": [{"host": "ws-dev-04"}], "timestamp": "2026-06-09T00:00:00Z", "node": "ioc_hunter"}],
+                "findings": [{"description": "Found on 4 hosts", "severity": "high", "iocs": [], "mitre_technique": None}],
+                "new_iocs": [],
+                "discovered_entities": [{"id": "ws-dev-04", "label": "ws-dev-04", "entity_type": "endpoint", "severity": "medium"}],
+                "raw_analysis": "Found extension installed on 4 hosts",
+            },
+            {
+                "agent_name": "threat_intel",
+                "splunk_queries": [{"spl": "search index=threat_intel", "results": [{"ioc_type": "domain"}], "timestamp": "2026-06-09T00:00:00Z", "node": "threat_intel"}],
+                "findings": [{"description": "Known C2 domain", "severity": "critical", "iocs": [], "mitre_technique": "T1071"}],
+                "new_iocs": [{"type": "ip", "value": "45.33.32.156", "source": "threat_intel"}],
+                "discovered_entities": [],
+                "raw_analysis": "C2 domain matches known threat actor",
+            },
+            {
+                "agent_name": "blast_radius",
+                "splunk_queries": [{"spl": "search index=cicd_events", "results": [{"runner": "ci-03"}], "timestamp": "2026-06-09T00:00:00Z", "node": "blast_radius"}],
+                "findings": [],
+                "new_iocs": [],
+                "discovered_entities": [{"id": "ci-03", "label": "ci-03", "entity_type": "pipeline", "severity": "medium"}],
+                "raw_analysis": "CI runner ci-03 executed compromised pipeline",
+            },
+        ]
+    )
 
     mock_llm = MagicMock()
-    mock_llm.ainvoke = AsyncMock(side_effect=[
-        AIMessage(content=MOCK_QUERY_PLAN),
-        AIMessage(content=MOCK_ANALYSIS),
-    ])
+    mock_llm.ainvoke = AsyncMock(return_value=AIMessage(content=MOCK_MERGE_RESPONSE))
 
-    with patch("app.agent.nodes.investigate.get_llm", return_value=mock_llm), \
-         patch("app.agent.nodes.investigate.run_splunk_query",
-               AsyncMock(return_value='[{"host": "ws-dev-04", "extension_id": "codestyle-formatter"}]')):
-        result = await investigate_node(state)
+    with patch("app.agent.nodes.investigate.get_llm", return_value=mock_llm):
+        result = await investigate_merge(state)
 
-    assert len(result["splunk_queries"]) == 2
-    assert len(result["findings"]) == 1
-    assert result["findings"][0]["severity"] == "high"
-    assert len(result["new_iocs"]) == 1
+    assert len(result["splunk_queries"]) == 3
+    assert len(result["findings"]) >= 1
+    assert len(result["discovered_entities"]) == 2
     assert result["status"] == "assessing"
     assert "[INVESTIGATE]" in result["reasoning"][0]
 
 
 @pytest.mark.asyncio
-async def test_investigate_caps_queries_at_ten():
-    state = _make_state(
-        investigation_plan=[f"Step {i}" for i in range(20)],
-    )
-
-    many_queries = json.dumps({
-        "queries": [
-            {"step": f"Step {i}", "spl": f"search index=cicd_events step={i}", "target_index": "cicd_events"}
-            for i in range(20)
-        ]
-    })
-    mock_analysis = json.dumps({
-        "findings": [], "new_iocs": [],
-        "needs_more_investigation": False, "reasoning": "Done",
-    })
+async def test_merge_handles_empty_sub_agent_results():
+    state = _make_state(sub_agent_results=[])
 
     mock_llm = MagicMock()
-    mock_llm.ainvoke = AsyncMock(side_effect=[
-        AIMessage(content=many_queries),
-        AIMessage(content=mock_analysis),
-    ])
+    mock_llm.ainvoke = AsyncMock(return_value=AIMessage(content=json.dumps({
+        "findings": [], "new_iocs": [], "reasoning": "No sub-agent data available",
+    })))
 
-    with patch("app.agent.nodes.investigate.get_llm", return_value=mock_llm), \
-         patch("app.agent.nodes.investigate.run_splunk_query", AsyncMock(return_value="[]")):
-        result = await investigate_node(state)
+    with patch("app.agent.nodes.investigate.get_llm", return_value=mock_llm):
+        result = await investigate_merge(state)
 
-    assert len(result["splunk_queries"]) <= 10
+    assert result["status"] == "assessing"
+    assert isinstance(result["splunk_queries"], list)
 
 
 def test_extract_entities_from_results():

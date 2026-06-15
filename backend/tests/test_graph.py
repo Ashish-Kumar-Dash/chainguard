@@ -30,16 +30,20 @@ def test_no_loop_back_when_over_max():
     assert should_loop_back(state) == "assess"
 
 
-def test_graph_has_correct_nodes():
+def test_graph_has_multi_agent_nodes():
     agent = create_agent()
     node_names = list(agent.get_graph().nodes.keys())
     assert "__start__" in node_names
     assert "detect" in node_names
-    assert "investigate" in node_names
+    assert "ioc_hunter" in node_names
+    assert "threat_intel" in node_names
+    assert "blast_radius" in node_names
+    assert "investigate_merge" in node_names
     assert "increment_loop" in node_names
     assert "assess" in node_names
     assert "remediate" in node_names
     assert "__end__" in node_names
+    assert "investigate" not in node_names
 
 
 def test_max_loops_is_three():
