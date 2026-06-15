@@ -11,6 +11,15 @@ def merge_lists(existing: list, new: list) -> list:
     return existing + new
 
 
+class SubAgentResult(TypedDict):
+    agent_name: str
+    splunk_queries: list[QueryResult]
+    findings: list[Finding]
+    new_iocs: list[IOC]
+    discovered_entities: list[GraphNode]
+    raw_analysis: str
+
+
 class InvestigationState(TypedDict):
     alert_raw: str
     attack_type: str
@@ -29,6 +38,7 @@ class InvestigationState(TypedDict):
     propagation_graph: PropagationGraph | None
 
     discovered_entities: Annotated[list[GraphNode], merge_lists]
+    sub_agent_results: Annotated[list[SubAgentResult], merge_lists]
 
     remediation_plan: list[RemediationAction]
     approved_actions: Annotated[list[RemediationAction], merge_lists]

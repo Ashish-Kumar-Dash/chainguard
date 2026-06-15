@@ -2,7 +2,8 @@ from langgraph.graph import StateGraph, START, END
 from langgraph.checkpoint.memory import MemorySaver
 from app.state import InvestigationState
 from app.agent.nodes.detect import detect_node
-from app.agent.nodes.investigate import investigate_node
+from app.agent.nodes.investigate import investigate_supervisor, investigate_merge
+from app.agent.nodes.sub_agents import ioc_hunter_node, threat_intel_node, blast_radius_node
 from app.agent.nodes.assess import assess_node
 from app.agent.nodes.remediate import remediate_node
 
@@ -25,14 +26,24 @@ def build_graph() -> StateGraph:
     graph = StateGraph(InvestigationState)
 
     graph.add_node("detect", detect_node)
-    graph.add_node("investigate", investigate_node)
+    graph.add_node("ioc_hunter", ioc_hunter_node)
+    graph.add_node("threat_intel", threat_intel_node)
+    graph.add_node("blast_radius", blast_radius_node)
+    graph.add_node("investigate_merge", investigate_merge)
     graph.add_node("increment_loop", increment_loop)
     graph.add_node("assess", assess_node)
     graph.add_node("remediate", remediate_node)
 
     graph.add_edge(START, "detect")
-    graph.add_edge("detect", "investigate")
-    graph.add_edge("investigate", "increment_loop")
+    # investigate_supervisor returns Send() objects — LangGraph requires these
+    # from conditional edge functions, not regular nodes.
+    graph.add_conditional_edges("detect", investigate_supervisor)
+
+    graph.add_edge("ioc_hunter", "investigate_merge")
+    graph.add_edge("threat_intel", "investigate_merge")
+    graph.add_edge("blast_radius", "investigate_merge")
+
+    graph.add_edge("investigate_merge", "increment_loop")
     graph.add_conditional_edges(
         "increment_loop",
         should_loop_back,
