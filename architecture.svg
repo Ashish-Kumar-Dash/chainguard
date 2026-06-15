@@ -1,210 +1,203 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 820" font-family="monospace" font-size="12">
-  <defs>
-    <marker id="arrow" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
-      <polygon points="0 0, 10 3.5, 0 7" fill="#65a637"/>
-    </marker>
-    <marker id="arrow-blue" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
-      <polygon points="0 0, 10 3.5, 0 7" fill="#3b82f6"/>
-    </marker>
-    <marker id="arrow-orange" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
-      <polygon points="0 0, 10 3.5, 0 7" fill="#f97316"/>
-    </marker>
-    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#0d1117"/>
-      <stop offset="100%" stop-color="#161b22"/>
-    </linearGradient>
-  </defs>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 820">
 
   <!-- Background -->
-  <rect width="1100" height="820" fill="url(#bg)" rx="12"/>
+  <rect width="1100" height="820" fill="#0d1117" rx="12"/>
 
   <!-- Title -->
-  <text x="550" y="35" text-anchor="middle" fill="#65a637" font-size="18" font-weight="bold">ChainGuard Architecture</text>
-  <text x="550" y="52" text-anchor="middle" fill="#8b949e" font-size="11">Autonomous Supply Chain Threat Investigation Agent</text>
+  <text x="550" y="35" text-anchor="middle" fill="#65a637" font-family="monospace" font-size="18" font-weight="bold">ChainGuard Architecture</text>
+  <text x="550" y="52" text-anchor="middle" fill="#8b949e" font-family="monospace" font-size="11">Autonomous Supply Chain Threat Investigation Agent</text>
 
-  <!-- ==================== FRONTEND SECTION ==================== -->
+  <!-- ===== FRONTEND SECTION ===== -->
   <rect x="30" y="70" width="1040" height="100" rx="8" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="6,3"/>
-  <text x="50" y="90" fill="#3b82f6" font-size="13" font-weight="bold">FRONTEND</text>
-  <text x="155" y="90" fill="#8b949e" font-size="10">Next.js 16 + React Flow + Tailwind</text>
+  <text x="50" y="90" fill="#3b82f6" font-family="monospace" font-size="13" font-weight="bold">FRONTEND</text>
+  <text x="155" y="90" fill="#8b949e" font-family="monospace" font-size="10">Next.js 16 + React Flow + Tailwind</text>
 
-  <!-- Frontend boxes -->
   <rect x="60" y="100" width="180" height="50" rx="6" fill="#161b22" stroke="#30363d"/>
-  <text x="150" y="122" text-anchor="middle" fill="#c9d1d9" font-size="11" font-weight="bold">Command Center</text>
-  <text x="150" y="138" text-anchor="middle" fill="#8b949e" font-size="9">KPIs, MITRE heatmap, MCP metrics</text>
+  <text x="150" y="122" text-anchor="middle" fill="#c9d1d9" font-family="monospace" font-size="11" font-weight="bold">Command Center</text>
+  <text x="150" y="138" text-anchor="middle" fill="#8b949e" font-family="monospace" font-size="9">KPIs, MITRE, MCP metrics</text>
 
   <rect x="270" y="100" width="220" height="50" rx="6" fill="#161b22" stroke="#30363d"/>
-  <text x="380" y="122" text-anchor="middle" fill="#c9d1d9" font-size="11" font-weight="bold">Investigation Workspace</text>
-  <text x="380" y="138" text-anchor="middle" fill="#8b949e" font-size="9">Live SSE stream, attack graph, timeline</text>
+  <text x="380" y="122" text-anchor="middle" fill="#c9d1d9" font-family="monospace" font-size="11" font-weight="bold">Investigation Workspace</text>
+  <text x="380" y="138" text-anchor="middle" fill="#8b949e" font-family="monospace" font-size="9">SSE stream, graph, timeline</text>
 
   <rect x="520" y="100" width="170" height="50" rx="6" fill="#161b22" stroke="#30363d"/>
-  <text x="605" y="122" text-anchor="middle" fill="#c9d1d9" font-size="11" font-weight="bold">MITRE ATT&CK View</text>
-  <text x="605" y="138" text-anchor="middle" fill="#8b949e" font-size="9">Technique heatmap</text>
+  <text x="605" y="122" text-anchor="middle" fill="#c9d1d9" font-family="monospace" font-size="11" font-weight="bold">MITRE ATT&amp;CK View</text>
+  <text x="605" y="138" text-anchor="middle" fill="#8b949e" font-family="monospace" font-size="9">Technique heatmap</text>
 
   <rect x="720" y="100" width="170" height="50" rx="6" fill="#161b22" stroke="#30363d"/>
-  <text x="805" y="122" text-anchor="middle" fill="#c9d1d9" font-size="11" font-weight="bold">Remediation Panel</text>
-  <text x="805" y="138" text-anchor="middle" fill="#8b949e" font-size="9">Human-in-the-loop approval</text>
+  <text x="805" y="122" text-anchor="middle" fill="#c9d1d9" font-family="monospace" font-size="11" font-weight="bold">Remediation Panel</text>
+  <text x="805" y="138" text-anchor="middle" fill="#8b949e" font-family="monospace" font-size="9">Human-in-the-loop</text>
 
-  <!-- REST/SSE arrows -->
-  <line x1="380" y1="155" x2="380" y2="195" stroke="#3b82f6" stroke-width="1.5" marker-end="url(#arrow-blue)"/>
-  <text x="390" y="180" fill="#3b82f6" font-size="9">REST API + SSE</text>
+  <!-- REST/SSE arrow down -->
+  <polygon points="375,158 385,158 380,172" fill="#3b82f6"/>
+  <rect x="375" y="158" width="10" height="37" fill="#3b82f6" rx="1"/>
+  <polygon points="373,195 387,195 380,203" fill="#3b82f6"/>
+  <text x="395" y="182" fill="#3b82f6" font-family="monospace" font-size="9">REST + SSE</text>
 
-  <!-- ==================== BACKEND SECTION ==================== -->
-  <rect x="30" y="200" width="1040" height="380" rx="8" fill="none" stroke="#65a637" stroke-width="1.5" stroke-dasharray="6,3"/>
-  <text x="50" y="220" fill="#65a637" font-size="13" font-weight="bold">BACKEND</text>
-  <text x="130" y="220" fill="#8b949e" font-size="10">FastAPI + LangGraph + LangChain</text>
+  <!-- ===== BACKEND SECTION ===== -->
+  <rect x="30" y="210" width="1040" height="370" rx="8" fill="none" stroke="#65a637" stroke-width="1.5" stroke-dasharray="6,3"/>
+  <text x="50" y="230" fill="#65a637" font-family="monospace" font-size="13" font-weight="bold">BACKEND</text>
+  <text x="130" y="230" fill="#8b949e" font-family="monospace" font-size="10">FastAPI + LangGraph + LangChain</text>
 
-  <!-- Routes box -->
-  <rect x="60" y="230" width="150" height="90" rx="6" fill="#1c2333" stroke="#30363d"/>
-  <text x="135" y="252" text-anchor="middle" fill="#c9d1d9" font-size="11" font-weight="bold">FastAPI Routes</text>
-  <text x="135" y="268" text-anchor="middle" fill="#8b949e" font-size="9">POST /investigate</text>
-  <text x="135" y="280" text-anchor="middle" fill="#8b949e" font-size="9">GET  /investigate/{id}/stream</text>
-  <text x="135" y="292" text-anchor="middle" fill="#8b949e" font-size="9">POST /actions/{id}/approve</text>
-  <text x="135" y="304" text-anchor="middle" fill="#8b949e" font-size="9">POST /investigate/{id}/stop</text>
+  <!-- Routes -->
+  <rect x="55" y="245" width="155" height="95" rx="6" fill="#1c2333" stroke="#30363d"/>
+  <text x="132" y="265" text-anchor="middle" fill="#c9d1d9" font-family="monospace" font-size="11" font-weight="bold">FastAPI Routes</text>
+  <text x="132" y="282" text-anchor="middle" fill="#8b949e" font-family="monospace" font-size="9">POST /investigate</text>
+  <text x="132" y="295" text-anchor="middle" fill="#8b949e" font-family="monospace" font-size="9">GET  /{id}/stream</text>
+  <text x="132" y="308" text-anchor="middle" fill="#8b949e" font-family="monospace" font-size="9">POST /actions/approve</text>
+  <text x="132" y="321" text-anchor="middle" fill="#8b949e" font-family="monospace" font-size="9">POST /{id}/stop</text>
 
-  <!-- LangGraph pipeline -->
-  <rect x="240" y="230" width="810" height="340" rx="8" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
-  <text x="260" y="252" fill="#65a637" font-size="12" font-weight="bold">LangGraph StateGraph</text>
-  <text x="430" y="252" fill="#8b949e" font-size="9">Checkpointed with MemorySaver</text>
+  <!-- LangGraph container -->
+  <rect x="235" y="245" width="820" height="325" rx="8" fill="#0d1117" stroke="#30363d"/>
+  <text x="255" y="265" fill="#65a637" font-family="monospace" font-size="12" font-weight="bold">LangGraph StateGraph</text>
+  <text x="425" y="265" fill="#8b949e" font-family="monospace" font-size="9">Checkpointed (MemorySaver)</text>
 
-  <!-- DETECT node -->
-  <rect x="270" y="268" width="140" height="55" rx="6" fill="#1e3a5f" stroke="#3b82f6"/>
-  <text x="340" y="290" text-anchor="middle" fill="#3b82f6" font-size="12" font-weight="bold">DETECT</text>
-  <text x="340" y="306" text-anchor="middle" fill="#8b949e" font-size="9">Classify attack + extract IOCs</text>
+  <!-- DETECT -->
+  <rect x="265" y="280" width="140" height="50" rx="6" fill="#1e3a5f" stroke="#3b82f6"/>
+  <text x="335" y="302" text-anchor="middle" fill="#3b82f6" font-family="monospace" font-size="12" font-weight="bold">DETECT</text>
+  <text x="335" y="318" text-anchor="middle" fill="#8b949e" font-family="monospace" font-size="9">Classify + extract IOCs</text>
 
-  <!-- Arrow from DETECT to SUPERVISOR -->
-  <line x1="410" y1="295" x2="450" y2="295" stroke="#65a637" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <!-- Arrow DETECT to SUPERVISOR -->
+  <rect x="405" y="302" width="47" height="3" fill="#65a637"/>
+  <polygon points="449,296 462,303 449,310" fill="#65a637"/>
 
-  <!-- SUPERVISOR node -->
-  <rect x="455" y="268" width="150" height="55" rx="6" fill="#1a3320" stroke="#65a637" stroke-width="2"/>
-  <text x="530" y="288" text-anchor="middle" fill="#65a637" font-size="11" font-weight="bold">SUPERVISOR</text>
-  <text x="530" y="304" text-anchor="middle" fill="#8b949e" font-size="9">Send() fan-out to 3 agents</text>
+  <!-- SUPERVISOR -->
+  <rect x="465" y="280" width="155" height="50" rx="6" fill="#1a3320" stroke="#65a637" stroke-width="2"/>
+  <text x="542" y="300" text-anchor="middle" fill="#65a637" font-family="monospace" font-size="11" font-weight="bold">SUPERVISOR</text>
+  <text x="542" y="316" text-anchor="middle" fill="#8b949e" font-family="monospace" font-size="9">Send() fan-out to 3</text>
 
-  <!-- Fan-out arrows -->
-  <line x1="530" y1="323" x2="330" y2="358" stroke="#65a637" stroke-width="1.5" marker-end="url(#arrow)"/>
-  <line x1="530" y1="323" x2="530" y2="358" stroke="#65a637" stroke-width="1.5" marker-end="url(#arrow)"/>
-  <line x1="530" y1="323" x2="730" y2="358" stroke="#65a637" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <!-- PARALLEL label -->
+  <text x="540" y="348" text-anchor="middle" fill="#65a637" font-family="monospace" font-size="9" font-weight="bold">PARALLEL EXECUTION</text>
 
-  <!-- Three sub-agents -->
+  <!-- Fan-out lines -->
+  <line x1="500" y1="330" x2="340" y2="365" stroke="#65a637" stroke-width="2"/>
+  <polygon points="334,360 345,368 340,358" fill="#65a637"/>
+  <line x1="542" y1="330" x2="542" y2="365" stroke="#65a637" stroke-width="2"/>
+  <polygon points="536,362 548,362 542,372" fill="#65a637"/>
+  <line x1="585" y1="330" x2="740" y2="365" stroke="#65a637" stroke-width="2"/>
+  <polygon points="735,358 746,368 741,360" fill="#65a637"/>
+
   <!-- IOC Hunter -->
-  <rect x="260" y="363" width="145" height="65" rx="6" fill="#1e3a5f" stroke="#3b82f6"/>
-  <text x="332" y="385" text-anchor="middle" fill="#3b82f6" font-size="11" font-weight="bold">IOC Hunter</text>
-  <text x="332" y="400" text-anchor="middle" fill="#8b949e" font-size="9">Search indicators across</text>
-  <text x="332" y="412" text-anchor="middle" fill="#8b949e" font-size="9">all Splunk indexes</text>
+  <rect x="265" y="375" width="150" height="60" rx="6" fill="#1e3a5f" stroke="#3b82f6"/>
+  <text x="340" y="397" text-anchor="middle" fill="#3b82f6" font-family="monospace" font-size="11" font-weight="bold">IOC Hunter</text>
+  <text x="340" y="413" text-anchor="middle" fill="#8b949e" font-family="monospace" font-size="9">Search indicators</text>
+  <text x="340" y="425" text-anchor="middle" fill="#8b949e" font-family="monospace" font-size="9">across all indexes</text>
 
   <!-- Threat Intel -->
-  <rect x="460" y="363" width="145" height="65" rx="6" fill="#2d1b4e" stroke="#a855f7"/>
-  <text x="532" y="385" text-anchor="middle" fill="#a855f7" font-size="11" font-weight="bold">Threat Intel</text>
-  <text x="532" y="400" text-anchor="middle" fill="#8b949e" font-size="9">Correlate with known threats</text>
-  <text x="532" y="412" text-anchor="middle" fill="#8b949e" font-size="9">+ MITRE ATT&CK mapping</text>
+  <rect x="465" y="375" width="155" height="60" rx="6" fill="#2d1b4e" stroke="#a855f7"/>
+  <text x="542" y="397" text-anchor="middle" fill="#a855f7" font-family="monospace" font-size="11" font-weight="bold">Threat Intel</text>
+  <text x="542" y="413" text-anchor="middle" fill="#8b949e" font-family="monospace" font-size="9">Known threats +</text>
+  <text x="542" y="425" text-anchor="middle" fill="#8b949e" font-family="monospace" font-size="9">MITRE ATT&amp;CK mapping</text>
 
   <!-- Blast Radius -->
-  <rect x="660" y="363" width="145" height="65" rx="6" fill="#3b2206" stroke="#f97316"/>
-  <text x="732" y="385" text-anchor="middle" fill="#f97316" font-size="11" font-weight="bold">Blast Radius</text>
-  <text x="732" y="400" text-anchor="middle" fill="#8b949e" font-size="9">Map spread: repos, pipelines</text>
-  <text x="732" y="412" text-anchor="middle" fill="#8b949e" font-size="9">endpoints, secrets</text>
+  <rect x="670" y="375" width="150" height="60" rx="6" fill="#3b2206" stroke="#f97316"/>
+  <text x="745" y="397" text-anchor="middle" fill="#f97316" font-family="monospace" font-size="11" font-weight="bold">Blast Radius</text>
+  <text x="745" y="413" text-anchor="middle" fill="#8b949e" font-family="monospace" font-size="9">Repos, pipelines,</text>
+  <text x="745" y="425" text-anchor="middle" fill="#8b949e" font-family="monospace" font-size="9">endpoints, secrets</text>
 
-  <!-- Converge arrows to MERGE -->
-  <line x1="332" y1="428" x2="530" y2="458" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrow)"/>
-  <line x1="532" y1="428" x2="530" y2="458" stroke="#22d3ee" stroke-width="1.5"/>
-  <line x1="732" y1="428" x2="530" y2="458" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <!-- Converge lines to MERGE -->
+  <line x1="340" y1="435" x2="510" y2="462" stroke="#22d3ee" stroke-width="2"/>
+  <line x1="542" y1="435" x2="540" y2="462" stroke="#22d3ee" stroke-width="2"/>
+  <line x1="745" y1="435" x2="570" y2="462" stroke="#22d3ee" stroke-width="2"/>
+  <polygon points="534,460 546,460 540,470" fill="#22d3ee"/>
 
-  <!-- MERGE node -->
-  <rect x="460" y="460" width="145" height="45" rx="6" fill="#0c3543" stroke="#22d3ee"/>
-  <text x="532" y="480" text-anchor="middle" fill="#22d3ee" font-size="11" font-weight="bold">MERGE</text>
-  <text x="532" y="493" text-anchor="middle" fill="#8b949e" font-size="9">LLM-powered deduplication</text>
+  <!-- MERGE -->
+  <rect x="468" y="472" width="148" height="42" rx="6" fill="#0c3543" stroke="#22d3ee"/>
+  <text x="542" y="491" text-anchor="middle" fill="#22d3ee" font-family="monospace" font-size="11" font-weight="bold">MERGE</text>
+  <text x="542" y="505" text-anchor="middle" fill="#8b949e" font-family="monospace" font-size="9">LLM deduplication</text>
 
-  <!-- Arrow from MERGE to LOOP -->
-  <line x1="532" y1="505" x2="532" y2="520" stroke="#65a637" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <!-- Arrow MERGE to LOOP -->
+  <rect x="539" y="514" width="3" height="15" fill="#65a637"/>
+  <polygon points="534,527 546,527 540,535" fill="#65a637"/>
 
-  <!-- LOOP box -->
-  <rect x="490" y="522" width="85" height="35" rx="6" fill="#161b22" stroke="#fbbf24" stroke-dasharray="4,2"/>
-  <text x="532" y="543" text-anchor="middle" fill="#fbbf24" font-size="10" font-weight="bold">LOOP?</text>
-  <text x="532" y="553" text-anchor="middle" fill="#8b949e" font-size="8">max 3</text>
+  <!-- LOOP -->
+  <rect x="500" y="537" width="85" height="30" rx="6" fill="#161b22" stroke="#fbbf24" stroke-dasharray="4,2"/>
+  <text x="542" y="556" text-anchor="middle" fill="#fbbf24" font-family="monospace" font-size="10" font-weight="bold">LOOP? (3x)</text>
 
-  <!-- Loop-back arrow -->
-  <path d="M490,540 L270,540 L270,295 L270,295" fill="none" stroke="#fbbf24" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arrow-orange)"/>
-  <text x="265" y="420" fill="#fbbf24" font-size="8" transform="rotate(-90,265,420)">new IOCs found</text>
+  <!-- Loop-back path -->
+  <line x1="500" y1="552" x2="250" y2="552" stroke="#fbbf24" stroke-width="1" stroke-dasharray="4,2"/>
+  <line x1="250" y1="552" x2="250" y2="305" stroke="#fbbf24" stroke-width="1" stroke-dasharray="4,2"/>
+  <polygon points="246,310 254,310 250,300" fill="#fbbf24"/>
+  <text x="255" y="435" fill="#fbbf24" font-family="monospace" font-size="8" transform="rotate(-90,255,435)">new IOCs</text>
 
-  <!-- Arrow from LOOP to ASSESS -->
-  <line x1="575" y1="540" x2="680" y2="540" stroke="#65a637" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <!-- Arrow LOOP to ASSESS -->
+  <rect x="585" y="550" width="92" height="3" fill="#65a637"/>
+  <polygon points="674,544 687,551 674,558" fill="#65a637"/>
 
-  <!-- ASSESS node -->
-  <rect x="680" y="518" width="150" height="45" rx="6" fill="#3b1111" stroke="#ef4444"/>
-  <text x="755" y="537" text-anchor="middle" fill="#ef4444" font-size="11" font-weight="bold">ASSESS IMPACT</text>
-  <text x="755" y="551" text-anchor="middle" fill="#8b949e" font-size="9">Severity, blast radius, timeline</text>
+  <!-- ASSESS -->
+  <rect x="690" y="530" width="150" height="42" rx="6" fill="#3b1111" stroke="#ef4444"/>
+  <text x="765" y="549" text-anchor="middle" fill="#ef4444" font-family="monospace" font-size="11" font-weight="bold">ASSESS IMPACT</text>
+  <text x="765" y="563" text-anchor="middle" fill="#8b949e" font-family="monospace" font-size="9">Severity + blast radius</text>
 
-  <!-- Arrow from ASSESS to REMEDIATE -->
-  <line x1="830" y1="540" x2="860" y2="540" stroke="#65a637" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <!-- Arrow ASSESS to REMEDIATE -->
+  <rect x="840" y="550" width="25" height="3" fill="#65a637"/>
+  <polygon points="862,544 875,551 862,558" fill="#65a637"/>
 
-  <!-- REMEDIATE node -->
-  <rect x="860" y="518" width="170" height="45" rx="6" fill="#1a3320" stroke="#65a637"/>
-  <text x="945" y="537" text-anchor="middle" fill="#65a637" font-size="11" font-weight="bold">REMEDIATE</text>
-  <text x="945" y="551" text-anchor="middle" fill="#8b949e" font-size="9">Prioritized actions (HITL gate)</text>
-
-  <!-- MCP Metrics box -->
-  <rect x="60" y="340" width="150" height="55" rx="6" fill="#161b22" stroke="#22d3ee"/>
-  <text x="135" y="362" text-anchor="middle" fill="#22d3ee" font-size="11" font-weight="bold">MCP Metrics</text>
-  <text x="135" y="378" text-anchor="middle" fill="#8b949e" font-size="9">Latency, success rate,</text>
-  <text x="135" y="390" text-anchor="middle" fill="#8b949e" font-size="9">per-tool call tracking</text>
-
-  <!-- Storage box -->
-  <rect x="60" y="410" width="150" height="45" rx="6" fill="#161b22" stroke="#30363d"/>
-  <text x="135" y="432" text-anchor="middle" fill="#c9d1d9" font-size="11" font-weight="bold">Storage</text>
-  <text x="135" y="446" text-anchor="middle" fill="#8b949e" font-size="9">JSON file persistence</text>
-
-  <!-- "PARALLEL" label -->
-  <text x="533" y="355" text-anchor="middle" fill="#65a637" font-size="9" font-weight="bold">PARALLEL EXECUTION</text>
+  <!-- REMEDIATE -->
+  <rect x="878" y="530" width="160" height="42" rx="6" fill="#1a3320" stroke="#65a637"/>
+  <text x="958" y="549" text-anchor="middle" fill="#65a637" font-family="monospace" font-size="11" font-weight="bold">REMEDIATE</text>
+  <text x="958" y="563" text-anchor="middle" fill="#8b949e" font-family="monospace" font-size="9">Actions (HITL gate)</text>
 
   <!-- LLM callout -->
-  <rect x="860" y="268" width="170" height="75" rx="6" fill="#161b22" stroke="#fbbf24"/>
-  <text x="945" y="290" text-anchor="middle" fill="#fbbf24" font-size="11" font-weight="bold">LLM (Groq)</text>
-  <text x="945" y="306" text-anchor="middle" fill="#8b949e" font-size="9">llama-3.3-70b-versatile</text>
-  <text x="945" y="322" text-anchor="middle" fill="#8b949e" font-size="9">via LangChain</text>
-  <text x="945" y="336" text-anchor="middle" fill="#8b949e" font-size="9">~8 LLM calls per investigation</text>
+  <rect x="870" y="280" width="170" height="70" rx="6" fill="#161b22" stroke="#fbbf24"/>
+  <text x="955" y="300" text-anchor="middle" fill="#fbbf24" font-family="monospace" font-size="11" font-weight="bold">LLM (Groq)</text>
+  <text x="955" y="316" text-anchor="middle" fill="#8b949e" font-family="monospace" font-size="9">llama-3.3-70b-versatile</text>
+  <text x="955" y="332" text-anchor="middle" fill="#8b949e" font-family="monospace" font-size="9">via LangChain</text>
+  <text x="955" y="345" text-anchor="middle" fill="#8b949e" font-family="monospace" font-size="9">~8 calls/investigation</text>
 
-  <!-- ==================== SPLUNK SECTION ==================== -->
-  <rect x="30" y="600" width="1040" height="200" rx="8" fill="none" stroke="#f97316" stroke-width="1.5" stroke-dasharray="6,3"/>
-  <text x="50" y="620" fill="#f97316" font-size="13" font-weight="bold">SPLUNK ENTERPRISE</text>
-  <text x="220" y="620" fill="#8b949e" font-size="10">Docker Container</text>
+  <!-- MCP Metrics -->
+  <rect x="55" y="355" width="155" height="50" rx="6" fill="#161b22" stroke="#22d3ee"/>
+  <text x="132" y="377" text-anchor="middle" fill="#22d3ee" font-family="monospace" font-size="11" font-weight="bold">MCP Metrics</text>
+  <text x="132" y="393" text-anchor="middle" fill="#8b949e" font-family="monospace" font-size="9">Latency, success rate</text>
 
-  <!-- MCP arrow -->
-  <line x1="530" y1="575" x2="530" y2="630" stroke="#f97316" stroke-width="2" marker-end="url(#arrow-orange)"/>
-  <text x="545" y="605" fill="#f97316" font-size="10" font-weight="bold">MCP (Streamable HTTP)</text>
+  <!-- Storage -->
+  <rect x="55" y="420" width="155" height="40" rx="6" fill="#161b22" stroke="#30363d"/>
+  <text x="132" y="445" text-anchor="middle" fill="#c9d1d9" font-family="monospace" font-size="11" font-weight="bold">JSON Storage</text>
 
-  <!-- MCP Server box -->
-  <rect x="380" y="635" width="300" height="45" rx="6" fill="#3b2206" stroke="#f97316"/>
-  <text x="530" y="655" text-anchor="middle" fill="#f97316" font-size="11" font-weight="bold">Splunk App for MCP</text>
-  <text x="530" y="670" text-anchor="middle" fill="#8b949e" font-size="9">Exposes splunk_run_query + splunk_get_indexes tools</text>
+  <!-- ===== MCP ARROW ===== -->
+  <rect x="539" y="580" width="3" height="42" fill="#f97316"/>
+  <polygon points="534,620 546,620 540,630" fill="#f97316"/>
+  <text x="555" y="607" fill="#f97316" font-family="monospace" font-size="10" font-weight="bold">MCP (Streamable HTTP)</text>
 
-  <!-- Splunk indexes -->
-  <rect x="60" y="700" width="180" height="80" rx="6" fill="#161b22" stroke="#30363d"/>
-  <text x="150" y="720" text-anchor="middle" fill="#c9d1d9" font-size="11" font-weight="bold">Security Indexes</text>
-  <text x="150" y="738" text-anchor="middle" fill="#f97316" font-size="9">cicd_events</text>
-  <text x="150" y="750" text-anchor="middle" fill="#f97316" font-size="9">git_events</text>
-  <text x="150" y="762" text-anchor="middle" fill="#f97316" font-size="9">secret_audit</text>
-  <text x="150" y="774" text-anchor="middle" fill="#f97316" font-size="9">extensions | threat_intel</text>
+  <!-- ===== SPLUNK SECTION ===== -->
+  <rect x="30" y="635" width="1040" height="170" rx="8" fill="none" stroke="#f97316" stroke-width="1.5" stroke-dasharray="6,3"/>
+  <text x="50" y="655" fill="#f97316" font-family="monospace" font-size="13" font-weight="bold">SPLUNK ENTERPRISE</text>
+  <text x="225" y="655" fill="#8b949e" font-family="monospace" font-size="10">Docker Container</text>
 
-  <!-- HEC box -->
-  <rect x="280" y="700" width="200" height="80" rx="6" fill="#161b22" stroke="#30363d"/>
-  <text x="380" y="720" text-anchor="middle" fill="#c9d1d9" font-size="11" font-weight="bold">HEC Endpoint</text>
-  <text x="380" y="738" text-anchor="middle" fill="#8b949e" font-size="9">Receives synthetic attack data</text>
-  <text x="380" y="754" text-anchor="middle" fill="#8b949e" font-size="9">3 scenarios: trojanized extension,</text>
-  <text x="380" y="766" text-anchor="middle" fill="#8b949e" font-size="9">poisoned package, compromised CI</text>
+  <!-- MCP Server -->
+  <rect x="370" y="668" width="310" height="42" rx="6" fill="#3b2206" stroke="#f97316"/>
+  <text x="525" y="688" text-anchor="middle" fill="#f97316" font-family="monospace" font-size="11" font-weight="bold">Splunk App for MCP</text>
+  <text x="525" y="702" text-anchor="middle" fill="#8b949e" font-family="monospace" font-size="9">splunk_run_query + splunk_get_indexes</text>
+
+  <!-- Indexes -->
+  <rect x="55" y="720" width="190" height="70" rx="6" fill="#161b22" stroke="#30363d"/>
+  <text x="150" y="740" text-anchor="middle" fill="#c9d1d9" font-family="monospace" font-size="11" font-weight="bold">Security Indexes</text>
+  <text x="150" y="756" text-anchor="middle" fill="#f97316" font-family="monospace" font-size="9">cicd_events | git_events</text>
+  <text x="150" y="768" text-anchor="middle" fill="#f97316" font-family="monospace" font-size="9">secret_audit | extensions</text>
+  <text x="150" y="780" text-anchor="middle" fill="#f97316" font-family="monospace" font-size="9">threat_intel</text>
+
+  <!-- HEC -->
+  <rect x="275" y="720" width="200" height="70" rx="6" fill="#161b22" stroke="#30363d"/>
+  <text x="375" y="740" text-anchor="middle" fill="#c9d1d9" font-family="monospace" font-size="11" font-weight="bold">HEC Endpoint</text>
+  <text x="375" y="756" text-anchor="middle" fill="#8b949e" font-family="monospace" font-size="9">Synthetic attack data</text>
+  <text x="375" y="768" text-anchor="middle" fill="#8b949e" font-family="monospace" font-size="9">3 scenarios: extension,</text>
+  <text x="375" y="780" text-anchor="middle" fill="#8b949e" font-family="monospace" font-size="9">package, CI/CD</text>
 
   <!-- Splunk Web -->
-  <rect x="520" y="700" width="180" height="80" rx="6" fill="#161b22" stroke="#30363d"/>
-  <text x="610" y="720" text-anchor="middle" fill="#c9d1d9" font-size="11" font-weight="bold">Splunk Web UI</text>
-  <text x="610" y="738" text-anchor="middle" fill="#8b949e" font-size="9">localhost:8000</text>
-  <text x="610" y="754" text-anchor="middle" fill="#8b949e" font-size="9">Search, dashboards,</text>
-  <text x="610" y="766" text-anchor="middle" fill="#8b949e" font-size="9">data exploration</text>
+  <rect x="505" y="720" width="180" height="70" rx="6" fill="#161b22" stroke="#30363d"/>
+  <text x="595" y="740" text-anchor="middle" fill="#c9d1d9" font-family="monospace" font-size="11" font-weight="bold">Splunk Web UI</text>
+  <text x="595" y="756" text-anchor="middle" fill="#8b949e" font-family="monospace" font-size="9">localhost:8000</text>
+  <text x="595" y="768" text-anchor="middle" fill="#8b949e" font-family="monospace" font-size="9">Search + dashboards</text>
 
-  <!-- Data flow legend -->
-  <rect x="740" y="700" width="310" height="80" rx="6" fill="#161b22" stroke="#30363d"/>
-  <text x="895" y="720" text-anchor="middle" fill="#c9d1d9" font-size="11" font-weight="bold">Data Flow</text>
-  <line x1="760" y1="738" x2="800" y2="738" stroke="#3b82f6" stroke-width="2"/>
-  <text x="810" y="742" fill="#8b949e" font-size="9">REST API / SSE Stream</text>
-  <line x1="760" y1="756" x2="800" y2="756" stroke="#65a637" stroke-width="2"/>
-  <text x="810" y="760" fill="#8b949e" font-size="9">LangGraph pipeline flow</text>
-  <line x1="760" y1="774" x2="800" y2="774" stroke="#f97316" stroke-width="2"/>
-  <text x="810" y="778" fill="#8b949e" font-size="9">MCP / Splunk queries</text>
+  <!-- Legend -->
+  <rect x="720" y="720" width="330" height="70" rx="6" fill="#161b22" stroke="#30363d"/>
+  <text x="885" y="740" text-anchor="middle" fill="#c9d1d9" font-family="monospace" font-size="11" font-weight="bold">Legend</text>
+  <rect x="740" y="750" width="30" height="3" fill="#3b82f6"/>
+  <text x="780" y="754" fill="#8b949e" font-family="monospace" font-size="9">REST API / SSE Stream</text>
+  <rect x="740" y="764" width="30" height="3" fill="#65a637"/>
+  <text x="780" y="768" fill="#8b949e" font-family="monospace" font-size="9">LangGraph pipeline flow</text>
+  <rect x="740" y="778" width="30" height="3" fill="#f97316"/>
+  <text x="780" y="782" fill="#8b949e" font-family="monospace" font-size="9">MCP / Splunk queries</text>
+
 </svg>
